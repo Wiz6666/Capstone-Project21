@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Management App</title>
-    //CSS 装饰, 到时可以单独创建个文件
+    <!--CSS 装饰, 到时可以单独创建个文件-->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -103,7 +103,7 @@
 <body>
     <div class="container">
         <h1>Task Management</h1>
-        //注册表单的div
+        <!--注册表单的div-->
         <div id="register">
             <h2>Register</h2>
             <form id="register-form">
@@ -131,7 +131,7 @@
             </form>
             <div class="toggle-form" onclick="toggleForms()">Already have an account? Login</div>
         </div>
-        //登陆表单的div
+        <!--登陆表单的div-->
         <div id="login" style="display: none;">
             <h2>Login</h2>
             <form id="login-form">
@@ -147,7 +147,7 @@
             </form>
             <div class="toggle-form" onclick="toggleForms()">Don't have an account? Register</div>
         </div>
-        //基础的Task 的div(目前只会通过 ‘task-list’ 显示每个task标题)
+        <!--//基础的Task 的div(目前只会通过 ‘task-list’ 显示每个task标题)-->
         <div id="tasks">
             <h2>Tasks</h2>
             <ul id="task-list"></ul>
@@ -155,8 +155,7 @@
         </div>
     </div>
 
-
-    //确保注册表单和登陆表单总有一个隐藏, 一个显示
+    <!--确保注册表单和登陆表单总有一个隐藏, 一个显示-->
     <script>
         function toggleForms() {
             const registerForm = document.getElementById('register');
