@@ -1,23 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const NavBar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 控制登录状态
+
   return (
-    <nav style={styles.navbar}>
-      <div style={styles.logo}>
-        <img src="/path/to/logo.png" alt="Logo" style={styles.logoImage} />
+    <header style={styles.navbar}>
+      <div style={styles.logoContainer}>
+        <img src="path/to/logo.png" alt="Logo" style={styles.logoImage} />
         <span style={styles.logoText}>AASYP.ORG</span>
       </div>
-      <div style={styles.navLinks}>
-        <a href="/" style={styles.navLink}>HOME</a>
-        <a href="/project" style={styles.navLink}>PROJECT</a>
-        <a href="/dashboard" style={styles.navLink}>DASHBOARD</a>
-        <a href="/profile" style={styles.navLink}>PROFILE</a>
-        <a href="/login" style={styles.navLink}>LOGIN</a>
-      </div>
-      <div style={styles.search}>
-        <input type="text" placeholder="Search..." style={styles.searchInput} />
-      </div>
-    </nav>
+      <nav>
+        <ul style={styles.navLinks}>
+          <li><a href="/" style={styles.navLink}>HOME</a></li>
+          <li><a href="/project" style={styles.navLink}>PROJECT</a></li>
+          <li><a href="/dashboard" style={styles.navLink}>DASHBOARD</a></li>
+          <li><a href="/profile" style={styles.navLink}>PROFILE</a></li>
+          <li><a href="/login" style={styles.navLink}>LOGIN</a></li>
+        </ul>
+      </nav>
+      {isLoggedIn && (
+        <div style={styles.userAvatar}>
+          <img src="path/to/user-avatar.png" alt="User Avatar" style={styles.avatarImage} />
+        </div>
+      )}
+    </header>
   );
 };
 
@@ -29,7 +35,7 @@ const styles = {
     backgroundColor: '#2E4A29',
     padding: '10px 20px',
   },
-  logo: {
+  logoContainer: {
     display: 'flex',
     alignItems: 'center',
   },
@@ -44,6 +50,7 @@ const styles = {
   },
   navLinks: {
     display: 'flex',
+    justifyContent: 'center',
     gap: '20px',
   },
   navLink: {
@@ -51,13 +58,14 @@ const styles = {
     textDecoration: 'none',
     fontSize: '16px',
   },
-  search: {
-    position: 'relative',
+  userAvatar: {
+    display: 'flex',
+    alignItems: 'center',
   },
-  searchInput: {
-    padding: '5px 10px',
-    borderRadius: '5px',
-    border: 'none',
+  avatarImage: {
+    width: '30px',
+    height: '30px',
+    borderRadius: '50%',
   },
 };
 

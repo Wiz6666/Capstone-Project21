@@ -30,8 +30,7 @@ const styles = {
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Optional: Add overlay to darken the background image
-  },
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   textContainer: {
     position: 'absolute',
     top: '50%',

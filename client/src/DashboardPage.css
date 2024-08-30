@@ -1,0 +1,106 @@
+/* DashboardPage.css */
+
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .dashboard-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #0A1A11;
+    color: white;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #1B3B2A;
+  }
+  
+  .search-bar {
+    background-color: #264D3D;
+    border: none;
+    padding: 5px 10px;
+    color: white;
+  }
+  
+  nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav ul li {
+    margin: 0 15px;
+    cursor: pointer;
+  }
+  
+  .user-icon img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+  
+  .dashboard-content {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .task-cards {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+  }
+  
+  .task-card {
+    background-color: #1B3B2A;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    width: 200px;
+  }
+  
+  .task-card h2 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+  }
+  
+  .task-card p {
+    font-size: 2.5em;
+    margin: 0;
+  }
+  
+  .task-card span {
+    font-size: 0.8em;
+  }
+  
+  .charts {
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .chart {
+    background-color: #1B3B2A;
+    border-radius: 10px;
+    padding: 20px;
+    width: 350px;
+    text-align: center;
+  }
+  
+  .footer {
+    background-color: #1B3B2A;
+    text-align: center;
+    padding: 10px;
+  }
+  

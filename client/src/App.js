@@ -1,12 +1,12 @@
 import React from 'react';
 import Navbar from './Navbar';
-import HomePage from './HomePage';
-
+import Dashboard from './Dashboard';
+import './DashboardPage.css';
 function App() {
   return (
     <div className="App">
       <Navbar />
-      <HomePage />
+      <Dashboard />
     </div>
   );
 }

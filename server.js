@@ -4,11 +4,36 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');  // Import the CORS package
 const db = require('./db');
+const path = require('path');
+require('dotenv').config();
 
+const { createClient } = require('@supabase/supabase-js');
 const app = express();
+const port = 3000;
 
-app.use(bodyParser.json());
-app.use(cors());  // Enable CORS for all routes
+// 从 .env 文件中获取 Supabase 配置
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+
+
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve the index.html file from its location outside the public directory
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+
+app.use((req, res, next) => {
+    console.log(`Request URL: ${req.url}`);
+    console.log(`Request Method: ${req.method}`);
+    next();
+});
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 const SECRET_KEY = 'your_jwt_secret_key';
 
@@ -116,7 +141,9 @@ app.delete('/tasks/:id', verifyToken, (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// Handles any requests that don't match the ones above
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
+
+const PORT = process.env.PORT || 5000;
