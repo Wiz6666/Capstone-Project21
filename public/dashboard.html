@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Dashboard</title>
+    <style>
+        /* 样式可以根据需要进行自定义 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Task Status Dashboard</h1>
+        <canvas id="taskChart"></canvas>
+    </div>
+
+    <!-- 引入 Chart.js 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        async function fetchTasksAndRenderChart() {
+            try {
+                // 从后端获取数据
+                const response = await fetch('/dashboard-data');
+                const data = await response.json();
+
+                if (response.ok) {
+                    // 使用从服务器返回的数据生成图表
+                    const chartData = {
+                        labels: ['Total Tasks', 'To Do', 'In Progress', 'Completed'],
+                        datasets: [{
+                            label: 'Task Status',
+                            data: [
+                                data.totalTasks,
+                                data.toDoTasks,
+                                data.inProgressTasks,
+                                data.completedTasks
+                            ],
+                            backgroundColor: [
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(255, 99, 132, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(255, 99, 132, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    };
+
+                    const config = {
+                        type: 'bar', // 选择柱状图展示
+                        data: chartData,
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    };
+
+                    const taskChart = new Chart(
+                        document.getElementById('taskChart'),
+                        config
+                    );
+                } else {
+                    console.error('Error fetching task data:', data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // 调用函数以获取数据并渲染图表
+        fetchTasksAndRenderChart();
+    </script>
+</body>
+
+</html>
