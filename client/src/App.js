@@ -1,15 +1,22 @@
+// App.js
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './HomePage';
+import Dashboard from './Dashboard'; // Example of another component
 import Navbar from './Navbar';
-import Dashboard from './Dashboard';
-import './DashboardPage.css';
 import Footer from './Footer';
+
 function App() {
   return (
-    <div className="App">
+    <Router>
       <Navbar />
-      <Dashboard />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        {/* Add more routes as needed */}
+      </Routes>
       <Footer />
-    </div>
+    </Router>
   );
 }
 

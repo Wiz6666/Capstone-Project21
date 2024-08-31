@@ -1,72 +1,32 @@
 import React, { useState } from 'react';
+import './Navbar.css'; // Assuming you have some custom styles in a CSS file
 
-const NavBar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+const Navbar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Change this to reflect actual login status
 
   return (
-    <header style={styles.navbar}>
-      <div style={styles.logoContainer}>
-        <img src="path/to/logo.png" alt="Logo" style={styles.logoImage} />
-        <span style={styles.logoText}>AASYP.ORG</span>
+    <nav className="navbar">
+      <div className="navbar-logo">
+        <img src="/path-to-logo.png" alt="Logo" />
       </div>
-      <nav>
-        <ul style={styles.navLinks}>
-          <li><a href="/" style={styles.navLink}>HOME</a></li>
-          <li><a href="/project" style={styles.navLink}>PROJECT</a></li>
-          <li><a href="/dashboard" style={styles.navLink}>DASHBOARD</a></li>
-          <li><a href="/profile" style={styles.navLink}>PROFILE</a></li>
-          <li><a href="/login" style={styles.navLink}>LOGIN</a></li>
-        </ul>
-      </nav>
-      {isLoggedIn && (
-        <div style={styles.userAvatar}>
-          <img src="path/to/user-avatar.png" alt="User Avatar" style={styles.avatarImage} />
+      <ul className="navbar-menu">
+        <li><a href="/home">HOME</a></li>
+        <li><a href="/project">PROJECT</a></li>
+        <li><a href="/dashboard">DASHBOARD</a></li>
+        <li><a href="/profile">PROFILE</a></li>
+        {isLoggedIn && (
+          <li className="navbar-avatar">
+            <img src="/path-to-avatar.png" alt="User Avatar" />
+          </li>
+        )}
+      </ul>
+      {!isLoggedIn && (
+        <div className="navbar-login">
+          <a href="/login">LOGIN</a>
         </div>
       )}
-    </header>
+    </nav>
   );
-};
+}
 
-const styles = {
-  navbar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#2E4A29',
-    padding: '10px 20px',
-  },
-  logoContainer: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  logoImage: {
-    height: '30px',
-    marginRight: '10px',
-  },
-  logoText: {
-    color: '#FFFFFF',
-    fontSize: '20px',
-    fontWeight: 'bold',
-  },
-  navLinks: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-  },
-  navLink: {
-    color: '#FFFFFF',
-    textDecoration: 'none',
-    fontSize: '16px',
-  },
-  userAvatar: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  avatarImage: {
-    width: '30px',
-    height: '30px',
-    borderRadius: '50%',
-  },
-};
-
-export default NavBar;
+export default Navbar;
