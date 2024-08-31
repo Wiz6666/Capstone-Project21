@@ -1,23 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './DashboardPage.css';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-const dataPie = [
-  { name: 'Completed', value: 100 },
-  { name: 'Incomplete', value: 45 },
-];
-
-const COLORS = ['#0088FE', '#FF8042'];
-
-const dataBar = [
-  { name: 'Group 1', tasks: 5 },
-  { name: 'Group 2', tasks: 10 },
-  { name: 'Group 3', tasks: 15 },
-  { name: 'Group 4', tasks: 20 },
-  { name: 'Group 5', tasks: 25 },
-];
+const COLORS = ['#0088FE', '#FF8042', '#FFBB28'];
 
 const DashboardPage = () => {
+  const [dashboardData, setDashboardData] = useState({
+    totalTasks: 0,
+    toDoTasks: 0,
+    inProgressTasks: 0,
+    completedTasks: 0,
+  });
+
+  useEffect(() => {
+    // Fetch data from the backend API
+    fetch('/dashboard-data')
+      .then(response => response.json())
+      .then(data => {
+        // Update the state with data from the API
+        setDashboardData({
+          totalTasks: data.totalTasks || 0,
+          toDoTasks: data.toDoTasks || 0,
+          inProgressTasks: data.inProgressTasks || 0,
+          completedTasks: data.completedTasks || 0,
+        });
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
+
+  const dataPie = [
+    { name: 'Completed', value: dashboardData.completedTasks },
+    { name: 'In Progress', value: dashboardData.inProgressTasks },
+    { name: 'To Do', value: dashboardData.toDoTasks },
+  ];
+
+  const dataBar = [
+    { name: 'To Do', tasks: dashboardData.toDoTasks },
+    { name: 'In Progress', tasks: dashboardData.inProgressTasks },
+    { name: 'Completed', tasks: dashboardData.completedTasks },
+  ];
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-content">
@@ -25,33 +47,33 @@ const DashboardPage = () => {
         <div className="task-cards">
           <div className="task-card">
             <h2>COMPLETED TASKS</h2>
-            <p>100</p>
+            <p>{dashboardData.completedTasks}</p>
             <span>Task count</span>
           </div>
           <div className="task-card">
             <h2>INCOMPLETED TASKS</h2>
-            <p>45</p>
+            <p>{dashboardData.inProgressTasks}</p>
             <span>Task count</span>
           </div>
           <div className="task-card">
             <h2>OVERDUE TASKS</h2>
-            <p>20</p>
+            <p>{dashboardData.toDoTasks}</p>
             <span>Task count</span>
           </div>
           <div className="task-card">
             <h2>TOTAL TASKS</h2>
-            <p>165</p>
+            <p>{dashboardData.totalTasks}</p>
             <span>Task count</span>
           </div>
         </div>
         <div className="charts">
           <div className="chart">
             <h2>ALL TASKS BY COMPLETION STATUS</h2>
-            <PieChart width={200} height={200}>
+            <PieChart width={250} height={250}>
               <Pie
                 data={dataPie}
-                cx={100}
-                cy={100}
+                cx="50%"
+                cy="50%"
                 labelLine={false}
                 outerRadius={80}
                 fill="#8884d8"
@@ -66,8 +88,8 @@ const DashboardPage = () => {
           <div className="chart">
             <h2>INCOMPLETED TASKS BY GROUP</h2>
             <BarChart
-              width={300}
-              height={200}
+              width={350}
+              height={250}
               data={dataBar}
               margin={{
                 top: 5, right: 30, left: 20, bottom: 5,
@@ -83,9 +105,6 @@ const DashboardPage = () => {
           </div>
         </div>
       </div>
-      <footer className="footer">
-        <p>© 2023 ASEAN-Australia Strategic Youth Partnership Ltd ACN 631 871 184</p>
-      </footer>
     </div>
   );
 }

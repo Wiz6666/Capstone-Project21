@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const NavBar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 控制登录状态
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
   return (
     <header style={styles.navbar}>
