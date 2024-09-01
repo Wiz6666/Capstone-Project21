@@ -1,12 +1,12 @@
 .navbar {
     display: flex;
     align-items: center;
-    background-color: #2b4b2d; /* Adjust this color to match your background */
+    background-color: #2b4b2d; 
     padding: 10px 20px;
   }
   
   .navbar-logo img {
-    width: 50px; /* Adjust the size of the logo */
+    width: 50px; 
   }
   
   .navbar-menu {
@@ -29,7 +29,7 @@
   }
   
   .navbar-avatar img {
-    width: 40px; /* Adjust the size of the avatar */
+    width: 40px; 
     border-radius: 50%;
   }
   

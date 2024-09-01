@@ -4,7 +4,7 @@ const HomePage = () => {
   return (
     <div style={styles.container}>
       <div className="homepage">
-        {/* 使用 <video> 标签设置背景视频 */}
+        {}
         <video autoPlay loop muted className="video-background" style={styles.video}>
           <source src={`${process.env.PUBLIC_URL}/24 uwa capstone Group20 webpage background video.mp4`} type="video/mp4" />
           Your browser does not support the video tag.
@@ -35,15 +35,14 @@ const styles = {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-    zIndex: -1, // 确保视频位于其他内容的后面
-  },
+    zIndex: -1, 
   overlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 可选：为背景视频添加叠加层以暗化
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
   textContainer: {
     position: 'absolute',
