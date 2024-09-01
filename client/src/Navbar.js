@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import './Navbar.css'; // Assuming you have some custom styles in a CSS file
-
+import './Navbar.css'; 
 const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Change this to reflect actual login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
   return (
     <nav className="navbar">
