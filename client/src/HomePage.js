@@ -1,37 +1,77 @@
-// HomePage.js
 import React from 'react';
-import Footer from './Footer';
-import './HomePage.css';
 
 const HomePage = () => {
   return (
-    <div className="homepage">
-      {/* 直接使用 <video> 标签设置背景视频 */}
-      <video autoPlay loop muted className="video-background">
-        <source src={`${process.env.PUBLIC_URL}/24 uwa capstone Group20 webpage background video.mp4`} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
-      <div className="content">
-        <header className="header">
-          <h1 className="project-title">Project Management System</h1>
-          <div className="auth-buttons">
-            <button className="auth-button">Sign up</button>
-            <button className="auth-button">Sign in</button>
+    <div style={styles.container}>
+      <div className="homepage">
+        {/* 使用 <video> 标签设置背景视频 */}
+        <video autoPlay loop muted className="video-background" style={styles.video}>
+          <source src={`${process.env.PUBLIC_URL}/24 uwa capstone Group20 webpage background video.mp4`} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div style={styles.overlay}>
+          <div style={styles.textContainer}>
+            <h1 style={styles.title}>PROJECT MANAGEMENT SYSTEM</h1>
+            <div style={styles.buttonsContainer}>
+              <button style={styles.button}>Sign in</button>
+              <button style={styles.button}>Sign up</button>
+            </div>
           </div>
-        </header>
-
-        <section className="mission">
-          <p>
-            Our mission is to empower teams and individuals to achieve their goals efficiently through a user-friendly project management platform.
-            We strive to provide a seamless collaboration experience, enabling users to streamline workflows, track progress, and deliver projects on time.
-          </p>
-        </section>
+        </div>
       </div>
-
-      <Footer />
     </div>
   );
+};
+
+const styles = {
+  container: {
+    position: 'relative',
+    height: '100vh',
+  },
+  video: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    zIndex: -1, // 确保视频位于其他内容的后面
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 可选：为背景视频添加叠加层以暗化
+  },
+  textContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    textAlign: 'center',
+    color: '#FFFFFF',
+  },
+  title: {
+    fontSize: '48px',
+    fontWeight: 'bold',
+    marginBottom: '20px',
+  },
+  buttonsContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+  },
+  button: {
+    padding: '10px 20px',
+    fontSize: '18px',
+    color: '#FFFFFF',
+    backgroundColor: '#2E4A29',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
 };
 
 export default HomePage;
