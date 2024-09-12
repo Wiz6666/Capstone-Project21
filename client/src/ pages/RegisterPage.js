@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer'; // 导入 Footer 组件
+import { FaGoogle } from 'react-icons/fa'; // 导入谷歌图标
 import '../styles/RegisterPage.css';
 
 const RegisterPage = () => {
@@ -25,6 +26,12 @@ const RegisterPage = () => {
             <input type="password" placeholder="Password" style={styles.input} className="input-placeholder" />
             <input type="password" placeholder="Re-type Password" style={styles.input} className="input-placeholder" />
             <button type="submit" style={styles.button}>Sign up</button>
+
+            {/* Google Sign Up 按钮 */}
+            <button type="button" style={styles.googleButton}>
+              <FaGoogle style={styles.googleIcon} /> Google
+            </button>
+
             <button 
               type="button" 
               style={styles.link} 
@@ -129,6 +136,23 @@ const styles = {
     cursor: 'pointer',
     width: '45%',  // 调整宽度到与输入框一致
     marginLeft: '-60px'
+  },
+  googleButton: {
+    padding: '15px 20px',
+    fontSize: '18px',
+    color: '#FFFFFF',
+    backgroundColor: '#2E4A29',  // 使用与Sign up相同的背景颜色
+    border: 'none',
+    borderRadius: '20px',  // 圆角
+    cursor: 'pointer',
+    width: '45%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: '-60px',
+  },
+  googleIcon: {
+    marginRight: '10px',
   },
   link: {
     padding: '14px 10px',  // 调整按钮的内边距

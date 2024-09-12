@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer'; // 导入 Footer 组件
+import { FaGoogle } from 'react-icons/fa'; // 导入谷歌图标
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -22,6 +23,12 @@ const LoginPage = () => {
             <input type="email" placeholder="Your email" style={styles.input} className="input-placeholder" />
             <input type="password" placeholder="Your password" style={styles.input} className="input-placeholder" />
             <button type="submit" style={styles.button}>Sign in</button>
+
+            {/* Google Sign In 按钮，颜色与Sign in按钮一致 */}
+            <button type="button" style={styles.googleButton}>
+              <FaGoogle style={styles.googleIcon} /> Google
+            </button>
+
             <button 
               type="button" 
               style={styles.forgotPasswordButton} 
@@ -125,12 +132,29 @@ const styles = {
     padding: '15px 20px',  // 增大按钮的内边距
     fontSize: '18px',
     color: '#FFFFFF',
-    backgroundColor: '#2E4A29',
+    backgroundColor: '#2E4A29',  // 与Google按钮背景一致
     border: 'none',
     borderRadius: '20px',  // 变成圆角
     cursor: 'pointer',
     width: '45%',  // 调整宽度到与输入框一致
     marginLeft: '-60px',
+  },
+  googleButton: {
+    padding: '15px 20px',
+    fontSize: '18px',
+    color: '#FFFFFF',
+    backgroundColor: '#2E4A29',  // 绿色背景，与Sign in相同
+    border: 'none',
+    borderRadius: '20px',  // 变成圆角
+    cursor: 'pointer',
+    width: '45%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: '-60px',
+  },
+  googleIcon: {
+    marginRight: '10px',
   },
   forgotPasswordButton: {
     padding: '10px 10px',  // 调整按钮的内边距，使按钮更小
