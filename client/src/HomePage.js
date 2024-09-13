@@ -25,9 +25,9 @@ const CombinedPage = () => {
         <div className="homepage" style={{ ...styles.fullHeightSection, ...styles.gradientBackground }}>
           <div style={styles.infoSection}>
             <h1 style={styles.title}>WHAT IS AASYP PMS?</h1>
-            <p style={styles.description}>
-              Our mission is to empower teams and individuals to achieve their goals efficiently through a user-friendly project management platform. We strive to provide a seamless collaboration experience, enabling users to streamline workflows, track progress, and deliver projects on time.
-            </p>
+            <p style={{ ...styles.description, fontWeight: 'bold' }}>
+  Our mission is to empower teams and individuals to achieve their goals efficiently through a user-friendly project management platform.
+</p>
           </div>
           <div style={styles.videoContainer}>
             <video autoPlay loop muted style={styles.videoSmall}>
@@ -115,7 +115,7 @@ const styles = {
     color: '#FFFFFF',
   },
   title: {
-    fontSize: '36px',
+    fontSize: '48px',
     fontWeight: 'bold',
     marginBottom: '20px',
   },
@@ -123,6 +123,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     gap: '20px',
+    paddingTop: '20px',
   },
   button: {
     padding: '10px 20px',
