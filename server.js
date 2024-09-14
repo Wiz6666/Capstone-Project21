@@ -9,12 +9,29 @@ require('dotenv').config();
 
 const { createClient } = require('@supabase/supabase-js');
 const app = express();
-const port = 3000;
+const port = 5001;
+app.listen(5001, () => {
+    console.log('Server running on http://localhost:5001');
+});
+
+app.use(cors({
+    origin: 'http://localhost:3000',
+    methods: 'GET, POST, OPTIONS',
+    allowedHeaders: 'Content-Type',
+}));
+// 处理 OPTIONS 请求
+app.options('/dashboard-data', (req, res) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.sendStatus(200);
+});
 
 // 从 .env 文件中获取 Supabase 配置
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+
 
 
 
@@ -32,11 +49,10 @@ app.use((req, res, next) => {
     console.log(`Request Method: ${req.method}`);
     next();
 });
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
 
-app.use(bodyParser.json());
-app.use(cors());  // Enable CORS for all routes
-
-const SECRET_KEY = 'your_jwt_secret_key';
+//const SECRET_KEY = 'your_jwt_secret_key';
 
 // Register a new user
 app.post('/register', (req, res) => {
@@ -70,28 +86,16 @@ app.post('/login', (req, res) => {
 
 // Middleware to verify token
 function verifyToken(req, res, next) {
-    const token = req.headers['authorization']; // 从请求头中获取令牌
-    console.log('Received token:', token);  // 输出接收到的令牌以进行调试
+    const token = req.headers['authorization'];
+    if (!token) return res.status(403).send({ auth: false, message: 'No token provided.' });
 
-    if (!token) {
-        return res.status(403).send({ auth: false, message: 'No token provided.' }); // 如果没有提供令牌，则返回403错误
-    }
-
-    // 验证令牌并解码
     jwt.verify(token, SECRET_KEY, (err, decoded) => {
-        if (err) {
-            console.error('Token verification failed:', err); // 输出验证失败的错误信息
-            return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' }); // 返回500错误，表示令牌验证失败
-        }
-        console.log('Token verified, user ID:', decoded.id); // 输出成功解码的用户ID
-
-        req.userId = decoded.id; // 将解码后的用户ID保存到请求对象中，以便后续使用
-        req.userRole = decoded.role; // 将用户角色保存到请求对象中
-
-        next(); // 继续处理请求
+        if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+        req.userId = decoded.id;
+        req.userRole = decoded.role;
+        next();
     });
 }
-
 
 // Create a new task
 app.post('/tasks', verifyToken, (req, res) => {
@@ -154,56 +158,71 @@ app.delete('/tasks/:id', verifyToken, (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Handles any requests that don't match the ones above
+//app.get('*', (req, res) => {
+//res.sendFile(path.join(__dirname + '/client/build/index.html'));
+//});
 
-// 返回 dashboard.html 文件
-app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
+const PORT = process.env.PORT || 5000;
 
-// 返回任务统计数据给前端
+
+
+
 app.get('/dashboard-data', async (req, res) => {
     try {
-        // 获取总任务数
+        console.log('Received request at /dashboard-data');
+
+        // 从 Supabase 获取所有任务数据
         const { data: totalTasksData, error: totalTasksError } = await supabase
             .from('tasks')
-            .select('id', { count: 'exact' });
+            .select('*');
 
-        if (totalTasksError) throw totalTasksError;
+        if (totalTasksError) {
+            console.error('Error fetching total tasks:', totalTasksError);
+            return res.status(500).json({ error: 'Error fetching total tasks' });
+        }
+
+        // 计算任务总数
         const totalTasks = totalTasksData.length;
 
         // 获取 "To Do" 状态的任务数
         const { data: toDoTasksData, error: toDoTasksError } = await supabase
             .from('tasks')
-            .select('id', { count: 'exact' })
-            .eq('task_status', 'To Do');
+            .select('*')
+            .eq('task_status', 'To do');
 
-        if (toDoTasksError) throw toDoTasksError;
+        if (toDoTasksError) {
+            console.error('Error fetching To Do tasks:', toDoTasksError);
+            return res.status(500).json({ error: 'Error fetching To Do tasks' });
+        }
         const toDoTasks = toDoTasksData.length;
 
         // 获取 "In Progress" 状态的任务数
         const { data: inProgressTasksData, error: inProgressTasksError } = await supabase
             .from('tasks')
-            .select('id', { count: 'exact' })
-            .eq('task_status', 'In Progress');
+            .select('*')
+            .eq('task_status', 'In progress');
 
-        if (inProgressTasksError) throw inProgressTasksError;
+        if (inProgressTasksError) {
+            console.error('Error fetching In Progress tasks:', inProgressTasksError);
+            return res.status(500).json({ error: 'Error fetching In Progress tasks' });
+        }
         const inProgressTasks = inProgressTasksData.length;
 
         // 获取 "Completed" 状态的任务数
         const { data: completedTasksData, error: completedTasksError } = await supabase
             .from('tasks')
-            .select('id', { count: 'exact' })
+            .select('*')
             .eq('task_status', 'completed');
 
-        if (completedTasksError) throw completedTasksError;
+        if (completedTasksError) {
+            console.error('Error fetching Completed tasks:', completedTasksError);
+            return res.status(500).json({ error: 'Error fetching Completed tasks' });
+        }
         const completedTasks = completedTasksData.length;
 
         // 返回统计数据给前端
-        res.json({
+        res.status(200).json({
             totalTasks,
             toDoTasks,
             inProgressTasks,
