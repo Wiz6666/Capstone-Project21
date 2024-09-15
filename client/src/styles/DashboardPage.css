@@ -7,8 +7,8 @@ body, html {
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* 允许页面内容根据其内容的高度自动扩展 */
-  background: linear-gradient(to bottom, #a0c7c9, #f6d68b); /* 渐变背景 */
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #a0c7c9, #f6d68b); 
   color: white;
 }
 
@@ -53,14 +53,14 @@ nav ul li {
 h1 {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 2em; /* 调整标题的大小以提高可见性 */
+  font-size: 2em; 
 }
 
 .task-cards {
   display: flex;
-  justify-content: space-between; /* 修改为 space-between 以均匀分布 */
+  justify-content: space-between; 
   margin-bottom: 40px;
-  padding: 0 20px; /* 增加一些左右的内边距，确保卡片不会太贴边 */
+  padding: 0 20px; 
 }
 
 .task-card {
@@ -69,7 +69,7 @@ h1 {
   padding: 20px;
   text-align: center;
   width: 200px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影来提升卡片的层次感 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
 }
 
 .task-card h2 {
@@ -88,9 +88,9 @@ h1 {
 
 .charts {
   display: flex;
-  justify-content: space-between; /* 确保图表之间的分布一致 */
-  padding: 0 20px; /* 增加内边距，确保图表不会太贴边 */
-  flex-wrap: wrap; /* 允许图表在小屏幕上换行显示 */
+  justify-content: space-between;
+  padding: 0 20px; 
+  flex-wrap: wrap; 
 }
 
 .chart {
@@ -99,8 +99,8 @@ h1 {
   padding: 20px;
   width: 350px;
   text-align: center;
-  margin-bottom: 20px; /* 为每个图表增加下边距，以防图表之间太紧密 */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 同样为图表添加阴影 */
+  margin-bottom: 20px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
 }
 
 .footer {

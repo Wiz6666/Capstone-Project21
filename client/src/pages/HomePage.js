@@ -1,11 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // 导入 useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import '../styles/HomePage.css';
 
-
-
 const HomePage = () => {
-  const navigate = useNavigate(); // 使用 useNavigate 进行路由跳转
+  const navigate = useNavigate();
 
   return (
     <div className="container">
@@ -28,24 +26,23 @@ const HomePage = () => {
       </div>
 
       <div className="page">
-  <div className="homepage fullHeightSection gradientBackground">
-    <div className="contentContainer">
-      <div className="infoSection">
-        <h1 className="title">WHAT IS AASYP PMS?</h1>
-        <p className="description">
-          Our mission is to empower teams and individuals to achieve their goals efficiently through a user-friendly project management platform. We strive to provide a seamless collaboration experience, enabling users to streamline workflows, track progress, and deliver projects on time.
-        </p>
+        <div className="homepage fullHeightSection gradientBackground">
+          <div className="contentContainer">
+            <div className="infoSection">
+              <h1 className="title">WHAT IS AASYP PMS?</h1>
+              <p className="description">
+                Our mission is to empower teams and individuals to achieve their goals efficiently through a user-friendly project management platform. We strive to provide a seamless collaboration experience, enabling users to streamline workflows, track progress, and deliver projects on time.
+              </p>
+            </div>
+            <div className="videoContainer">
+              <video autoPlay loop muted className="videoSmall">
+                <source src={`${process.env.PUBLIC_URL}/PMS.mp4`} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="videoContainer">
-        <video autoPlay loop muted className="videoSmall">
-          <source src={`${process.env.PUBLIC_URL}/PMS.mp4`} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-      </div>
-    </div>
-  </div>
-</div>
-
 
       <div className="page">
         <video autoPlay loop muted className="video-background">
@@ -62,11 +59,18 @@ const HomePage = () => {
               <p className="value">team@aasyp.org</p>
               <p className="label">SOCIAL</p>
               <div className="socialIcons">
-                <a href="#" className="icon"><i className="fab fa-tumblr"></i></a>
-                <a href="#" className="icon"><i className="fab fa-facebook-f"></i></a>
-                <a href="#" className="icon"><i className="fab fa-youtube"></i></a>
-                <a href="#" className="icon"><i className="fab fa-instagram"></i></a>
-                <a href="#" className="icon"><i className="fab fa-linkedin-in"></i></a>
+                <a href="https://twitter.com/ausaseanyouth" className="icon" target="_blank" rel="noopener noreferrer">
+                  <img src="/twitter.png" alt="Twitter" className="social-icon-img" />
+                </a>
+                <a href="https://www.facebook.com/aasyp" className="icon" target="_blank" rel="noopener noreferrer">
+                  <img src="/facebook.png" alt="Facebook" className="social-icon-img" />
+                </a>
+                <a href="https://www.instagram.com/aus_aseanyouth/" className="icon" target="_blank" rel="noopener noreferrer">
+                  <img src="/ins.png" alt="Instagram" className="social-icon-img" />
+                </a>
+                <a href="https://www.linkedin.com/company/aasyp" className="icon" target="_blank" rel="noopener noreferrer">
+                  <img src="/linkedin.png" alt="LinkedIn" className="social-icon-img" />
+                </a>
               </div>
             </div>
           </div>
@@ -74,6 +78,6 @@ const HomePage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default HomePage;
