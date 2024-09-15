@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Navbar.css'; 
+import '../styles/Navbar.css';
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); 
@@ -15,8 +15,8 @@ const Navbar = () => {
         <li><a href="/dashboard">DASHBOARD</a></li>
         <li><a href="/profile">PROFILE</a></li>
         {isLoggedIn && (
-          <li className="navbar-avatar">
-            <img src="/path-to-avatar.png" alt="User Avatar" />
+<li className="navbar-avatar">
+            <img src="/logout avatar.png" alt="User Avatar" />
           </li>
         )}
       </ul>

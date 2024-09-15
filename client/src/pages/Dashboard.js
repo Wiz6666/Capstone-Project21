@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './DashboardPage.css';
+import '../styles/DashboardPage.css';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const COLORS = ['#0088FE', '#FF8042', '#FFBB28'];
