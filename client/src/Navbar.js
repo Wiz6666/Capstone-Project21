@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import './Navbar.css'; 
+
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <img src="/path-to-logo.png" alt="Logo" />
+        <img src="/AASYP-Logo-FC-Transparent.png" alt="Logo" />
       </div>
       <ul className="navbar-menu">
         <li><a href="/home">HOME</a></li>
