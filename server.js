@@ -227,7 +227,7 @@ app.get('/dashboard-data', async (req, res) => {
         let lowPriority = 0;
 
         totalTasksData.forEach(task => {
-            console.log('Task Priority:', task.priority); // 输出每个任务的优先级，调试用
+            console.log('Task Priority:', task.priority); // Output the priority of each task for debugging
 
             if (task.priority === 'High') {
                 highPriority++;
@@ -247,30 +247,30 @@ app.get('/dashboard-data', async (req, res) => {
         const taskCompletionRate = totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(2) + '%' : '0%';
         console.log('Task Completion Rate:', taskCompletionRate);
 
-        // 使用 map 方法生成数组
+        // Use map to generate the arrays
         const startDates = totalTasksData.map(task => task.start_date);
         const dueDates = totalTasksData.map(task => task.due_date);
         const statuses = totalTasksData.map(task => task.task_status);
         const durations = totalTasksData.map(task => {
             const startDate = new Date(task.start_date);
             const dueDate = new Date(task.due_date);
-            const duration = (dueDate - startDate) / (1000 * 60 * 60 * 24); // 以天为单位
-            return parseFloat(duration.toFixed(1)) > 0 ? parseFloat(duration.toFixed(1)) : 0; // 保留一位小数，避免负值
+            const duration = (dueDate - startDate) / (1000 * 60 * 60 * 24); // Measured in days
+            return parseFloat(duration.toFixed(1)) > 0 ? parseFloat(duration.toFixed(1)) : 0; // one decimal place and avoid negative values
         });
         console.log('Due Dates:', durations);
         console.log(' Start Dates:', startDates);
 
-        // 使用 reduce 方法计算每个 group 的任务数量
+        // Use reduce to calculate each groups' tasks
         const groupTaskCounts = totalTasksData.reduce((acc, task) => {
-            const groupName = task.group_name || 'Unknown'; // 如果 group_name 为空，设置为 'Unknown'
+            const groupName = task.group_name || 'Unknown'; // set 'Unknown'
             if (!acc[groupName]) {
-                acc[groupName] = 0; // 初始化组的任务数量
+                acc[groupName] = 0; // initial number
             }
-            acc[groupName] += 1; // 增加组的任务数量
+            acc[groupName] += 1; // add the task number
             return acc;
         }, {});
 
-        // 将 groupTaskCounts 转换为数组，返回给前端
+        // Convert groupTaskCounts to an array and return it to the frontend
         const groupTaskCountsArray = Object.keys(groupTaskCounts).map(groupName => ({
             groupName,
             taskCount: groupTaskCounts[groupName]
