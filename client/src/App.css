@@ -1,38 +1,79 @@
-.App {
+/* App.css */
+
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+/* 容器样式 */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* 保证页面内容至少占满整个视口 */
+}
+
+/* 导航栏样式 */
+.navbar {
+  display: flex;
+  justify-content: space-between; /* 将 logo 和菜单放在两端 */
+  align-items: center;
+  background-color: #2b4b2d;
+  padding: 10px 20px;
+}
+
+.navbar-logo img {
+  width: 50px;
+}
+
+.navbar-menu {
+  list-style: none;
+  display: flex;
+  gap: 20px; /* 设置菜单项之间的间距 */
+}
+
+.navbar-menu li a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+/* 内容区域样式 */
+.content {
+  flex: 1; /* 使内容区域填充剩余空间 */
+  padding: 20px;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+/* Footer 样式 */
+.footer {
+  text-align: center;
+  padding: 10px 20px;
+  background-color: #1B3B2A;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* 媒体查询，适应小屏幕 */
+@media (max-width: 768px) {
+  .navbar-menu {
+    flex-direction: column;
+    align-items: center;
   }
-  to {
-    transform: rotate(360deg);
+
+  .navbar-logo img {
+    width: 40px; /* 调整 logo 大小以适应小屏幕 */
+  }
+
+  .content {
+    padding: 10px;
+  }
+
+  .footer {
+    padding: 15px;
   }
 }
