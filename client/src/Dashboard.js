@@ -10,40 +10,58 @@ const DashboardPage = () => {
     toDoTasks: 0,
     inProgressTasks: 0,
     completedTasks: 0,
+    highPriority: 0,  //new
+    mediumPriority: 0, //new
+    lowPriority: 0,    //new
+    taskCompletionRate: 0, // new
+    startDates: [],        // new
+    dueDates: [],          // new
+    statuses: [],          // new
+    durations: [],         // new
+    groupTaskCounts: [],   // new
+
   });
 
-  // 使用 useEffect 在组件挂载时发起请求
+  // Use useEffect to get request
   useEffect(() => {
     fetch('http://localhost:5001/dashboard-data', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      mode: 'cors',  // 明确使用 CORS 模式
+      mode: 'cors',  // use  CORS mode
     })
       .then(response => {
-        console.log('Response from backend:', response);  // 打印完整的响应对象
-
+        console.log('Response from backend:', response);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
 
-        return response.json();  // 确保 response 转换为 JSON
+        return response.json();  // ensure response to convert to JSON
       })
       .then(data => {
-        console.log('Received data from backend:', data);  // 打印从后端收到的数据
+        console.log('Received data from backend:', data);
 
 
-        // 更新 state
+        // update state
         setDashboardData({
           totalTasks: data.totalTasks || 0,
           toDoTasks: data.toDoTasks || 0,
           inProgressTasks: data.inProgressTasks || 0,
           completedTasks: data.completedTasks || 0,
+          highPriority: data.highPriority || 0,
+          mediumPriority: data.mediumPriority || 0,
+          lowPriority: data.lowPriority || 0,
+          taskCompletionRate: data.taskCompletionRate || 0,
+          startDates: data.startDates || [],
+          dueDates: data.dueDates || [],
+          statuses: data.statuses || [],
+          durations: data.durations || [],
+          groupTaskCounts: data.groupTaskCounts || [],
         });
       })
       .catch(error => console.error('Error fetching data:', error));
-  }, []);  // 空数组意味着只在组件挂载时运行
+  }, []);
 
   // 数据用于展示图表
   const dataPie = [
@@ -61,6 +79,21 @@ const DashboardPage = () => {
 
 
 
+  // render groupTaskCounts 
+  const renderGroupTaskCounts = () => {
+    return (
+      <div>
+        <h2>Group Task Counts</h2>
+        <ul>
+          {dashboardData.groupTaskCounts.map((group, index) => (
+            <li key={index}>
+              <strong>{group.groupName}:</strong> {group.taskCount} tasks
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
 
 
   return (
@@ -86,6 +119,11 @@ const DashboardPage = () => {
           <div className="task-card">
             <h2>TOTAL TASKS</h2>
             <p>{dashboardData.totalTasks}</p>
+            <h2>testing_poriority</h2>
+            <p>{dashboardData.lowPriority}</p>
+            <h2>testing_grouptask</h2>
+            {renderGroupTaskCounts()} {/* 调用渲染 groupTaskCounts 的函数 */}
+
             <span>Task count</span>
           </div>
         </div>
