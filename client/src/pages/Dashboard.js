@@ -14,19 +14,30 @@ const DashboardPage = () => {
 
   useEffect(() => {
     // Fetch data from the backend API
-    fetch('/dashboard-data')
-      .then(response => response.json())
-      .then(data => {
-        // Update the state with data from the API
-        setDashboardData({
-          totalTasks: data.totalTasks || 0,
-          toDoTasks: data.toDoTasks || 0,
-          inProgressTasks: data.inProgressTasks || 0,
-          completedTasks: data.completedTasks || 0,
-        });
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }, []);
+    fetch('http://localhost:5001', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      mode: 'cors',  
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json(); 
+    })
+    .then(data => {
+      console.log('Received data from backend:', data); 
+      setDashboardData({
+        totalTasks: data.totalTasks || 0,
+        toDoTasks: data.toDoTasks || 0,
+        inProgressTasks: data.inProgressTasks || 0,
+        completedTasks: data.completedTasks || 0,
+      });
+    })  
+    .catch(error => console.error('Error fetching data:', error)); 
+  }, []);  
 
   const dataPie = [
     { name: 'Completed', value: dashboardData.completedTasks },
