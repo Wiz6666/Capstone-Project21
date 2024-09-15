@@ -1,11 +1,81 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from '../components/Footer'; // 导入 Footer 组件
-import { FaGoogle } from 'react-icons/fa'; // 导入谷歌图标
+import Footer from '../components/Footer';
+import { FaGoogle } from 'react-icons/fa';
+import { supabase } from '../supabaseClient';
 import '../styles/RegisterPage.css';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    console.log('Registration started');
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      console.log('Attempting to sign up with Supabase');
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      if (authError) throw authError;
+      console.log('Supabase sign up successful', authData);
+
+      if (authData.user && authData.user.id) {
+        console.log('Inserting user data into Users table');
+        const { data, error } = await supabase
+          .from('Users')
+          .insert([
+            { 
+              user_id: authData.user.id,
+              username: fullName,
+              email: email,
+              phone_number: null,
+              role: 'User'
+            }
+          ]);
+        if (error) {
+          console.error('Error inserting user data:', error);
+          throw error;
+        }
+        console.log('User data inserted successfully');
+      } else {
+        throw new Error('User ID not available after signup');
+      }
+
+      console.log('Showing alert');
+      alert('Registration successful! Please check your email to confirm your account.');
+      console.log('Navigating to login page');
+      navigate('/login');
+    } catch (error) {
+      console.error('Error during registration:', error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      const { user, error } = await supabase.auth.signIn({ provider: 'google' });
+      if (error) throw error;
+      // Google sign up successful, navigate to home page or dashboard
+      navigate('/');
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -20,15 +90,45 @@ const RegisterPage = () => {
             Please fill the form and open your account and enjoy your journey.
           </p>
           <h2 style={styles.signUp}>SIGN UP</h2>
-          <form style={styles.form}>
-            <input type="text" placeholder="Full Name" style={styles.input} className="input-placeholder" />
-            <input type="email" placeholder="Type Email" style={styles.input} className="input-placeholder" />
-            <input type="password" placeholder="Password" style={styles.input} className="input-placeholder" />
-            <input type="password" placeholder="Re-type Password" style={styles.input} className="input-placeholder" />
-            <button type="submit" style={styles.button}>Sign up</button>
+          {error && <p style={styles.error}>{error}</p>}
+          <form style={styles.form} onSubmit={handleRegister}>
+            <input
+              type="text"
+              placeholder="Full Name"
+              style={styles.input}
+              className="input-placeholder"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+            <input
+              type="email"
+              placeholder="Type Email"
+              style={styles.input}
+              className="input-placeholder"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              style={styles.input}
+              className="input-placeholder"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Re-type Password"
+              style={styles.input}
+              className="input-placeholder"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <button type="submit" style={styles.button} disabled={isLoading}>
+              {isLoading ? 'Signing up...' : 'Sign up'}
+            </button>
 
-            {/* Google Sign Up 按钮 */}
-            <button type="button" style={styles.googleButton}>
+            <button type="button" style={styles.googleButton} onClick={handleGoogleSignUp}>
               <FaGoogle style={styles.googleIcon} /> Google
             </button>
 
@@ -42,7 +142,7 @@ const RegisterPage = () => {
           </form>
         </div>
       </div>
-      <Footer /> {/* 在页面中使用 Footer 组件 */}
+      <Footer />
     </div>
   );
 };
@@ -166,6 +266,10 @@ const styles = {
     marginLeft: '-60px',
     marginTop: '10px',  // 增加与上方按钮的间距
     textAlign: 'center',  // 居中对齐
+  },
+  error: {
+    color: 'red',
+    marginBottom: '10px',
   },
 };
 

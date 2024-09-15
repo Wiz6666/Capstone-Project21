@@ -1,10 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer'; // 导入 Footer 组件
 import { FaGoogle } from 'react-icons/fa'; // 导入谷歌图标
+import { supabase } from '../supabaseClient';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      
+      // Login successful
+      alert('Login successful!');
+      // Redirect to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { user, error } = await supabase.auth.signIn({ provider: 'google' });
+      if (error) throw error;
+      // Google login successful, navigate to home page or dashboard
+      navigate('/');
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -19,13 +57,29 @@ const LoginPage = () => {
             Please fill the form and open your account and enjoy your journey.
           </p>
           <h2 style={styles.signIn}>SIGN IN</h2>
-          <form style={styles.form}>
-            <input type="email" placeholder="Your email" style={styles.input} className="input-placeholder" />
-            <input type="password" placeholder="Your password" style={styles.input} className="input-placeholder" />
-            <button type="submit" style={styles.button}>Sign in</button>
+          {error && <p style={styles.error}>{error}</p>}
+          <form style={styles.form} onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Your email"
+              style={styles.input}
+              className="input-placeholder"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Your password"
+              style={styles.input}
+              className="input-placeholder"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit" style={styles.button} disabled={isLoading}>
+              {isLoading ? 'Signing in...' : 'Sign in'}
+            </button>
 
-            {/* Google Sign In 按钮，颜色与Sign in按钮一致 */}
-            <button type="button" style={styles.googleButton}>
+            <button type="button" style={styles.googleButton} onClick={handleGoogleLogin}>
               <FaGoogle style={styles.googleIcon} /> Google
             </button>
 
@@ -179,6 +233,10 @@ const styles = {
     width: '45%',  // 调整按钮的宽度，使其小于输入框和其他按钮
     marginLeft: '-60px',
     marginTop: '10px',  // 增加与上方按钮的间距
+  },
+  error: {
+    color: 'red',
+    marginBottom: '10px',
   },
 };
 
