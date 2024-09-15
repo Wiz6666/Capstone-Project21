@@ -9,9 +9,27 @@ require('dotenv').config();
 
 const { createClient } = require('@supabase/supabase-js');
 const app = express();
-const port = 3000;
+const port = 5001;
+app.listen(5001, () => {
+    console.log('Server running on http://localhost:5001');
+});
 
-// 从 .env 文件中获取 Supabase 配置
+app.use(cors({
+    origin: 'http://localhost:3000',
+    methods: 'GET, POST, OPTIONS',
+    allowedHeaders: 'Content-Type',
+}));
+// deal with OPTIONS request
+app.options('/dashboard-data', (req, res) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.sendStatus(200);
+});
+
+
+
+// get Supabase setting from the .env
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
