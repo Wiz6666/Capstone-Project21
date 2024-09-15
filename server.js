@@ -172,7 +172,7 @@ app.get('/dashboard-data', async (req, res) => {
     try {
         console.log('Received request at /dashboard-data');
 
-        // 从 Supabase 获取所有任务数据
+        // Get data from the Supabase 
         const { data: totalTasksData, error: totalTasksError } = await supabase
             .from('tasks')
             .select('*');
@@ -182,10 +182,10 @@ app.get('/dashboard-data', async (req, res) => {
             return res.status(500).json({ error: 'Error fetching total tasks' });
         }
 
-        // 计算任务总数
+        // calculate the total tasks
         const totalTasks = totalTasksData.length;
 
-        // 获取 "To Do" 状态的任务数
+        // Get "To Do" status tasks
         const { data: toDoTasksData, error: toDoTasksError } = await supabase
             .from('tasks')
             .select('*')
@@ -197,7 +197,7 @@ app.get('/dashboard-data', async (req, res) => {
         }
         const toDoTasks = toDoTasksData.length;
 
-        // 获取 "In Progress" 状态的任务数
+        // Get "In Progress" status tasks
         const { data: inProgressTasksData, error: inProgressTasksError } = await supabase
             .from('tasks')
             .select('*')
@@ -209,7 +209,7 @@ app.get('/dashboard-data', async (req, res) => {
         }
         const inProgressTasks = inProgressTasksData.length;
 
-        // 获取 "Completed" 状态的任务数
+        // Get "Completed" status tasks
         const { data: completedTasksData, error: completedTasksError } = await supabase
             .from('tasks')
             .select('*')
@@ -221,13 +221,81 @@ app.get('/dashboard-data', async (req, res) => {
         }
         const completedTasks = completedTasksData.length;
 
-        // 返回统计数据给前端
+        // calculate the priority rate
+        let highPriority = 0;
+        let mediumPriority = 0;
+        let lowPriority = 0;
+
+        totalTasksData.forEach(task => {
+            console.log('Task Priority:', task.priority); // 输出每个任务的优先级，调试用
+
+            if (task.priority === 'High') {
+                highPriority++;
+            } else if (task.priority === 'Medium') {
+                mediumPriority++;
+            } else if (task.priority === 'Low') {
+                lowPriority++;
+            }
+        });
+
+        console.log('High Priority:', highPriority);
+        console.log('Medium Priority:', mediumPriority);
+        console.log('Low Priority:', lowPriority);
+
+
+        // calculate the completed rate
+        const taskCompletionRate = totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(2) + '%' : '0%';
+        console.log('Task Completion Rate:', taskCompletionRate);
+
+        // 使用 map 方法生成数组
+        const startDates = totalTasksData.map(task => task.start_date);
+        const dueDates = totalTasksData.map(task => task.due_date);
+        const statuses = totalTasksData.map(task => task.task_status);
+        const durations = totalTasksData.map(task => {
+            const startDate = new Date(task.start_date);
+            const dueDate = new Date(task.due_date);
+            const duration = (dueDate - startDate) / (1000 * 60 * 60 * 24); // 以天为单位
+            return parseFloat(duration.toFixed(1)) > 0 ? parseFloat(duration.toFixed(1)) : 0; // 保留一位小数，避免负值
+        });
+        console.log('Due Dates:', durations);
+        console.log(' Start Dates:', startDates);
+
+        // 使用 reduce 方法计算每个 group 的任务数量
+        const groupTaskCounts = totalTasksData.reduce((acc, task) => {
+            const groupName = task.group_name || 'Unknown'; // 如果 group_name 为空，设置为 'Unknown'
+            if (!acc[groupName]) {
+                acc[groupName] = 0; // 初始化组的任务数量
+            }
+            acc[groupName] += 1; // 增加组的任务数量
+            return acc;
+        }, {});
+
+        // 将 groupTaskCounts 转换为数组，返回给前端
+        const groupTaskCountsArray = Object.keys(groupTaskCounts).map(groupName => ({
+            groupName,
+            taskCount: groupTaskCounts[groupName]
+        }));
+        console.log('group:', groupTaskCountsArray);
+
+
+        // return data to the front end
         res.status(200).json({
             totalTasks,
             toDoTasks,
             inProgressTasks,
-            completedTasks
+            completedTasks,
+            highPriority,
+            mediumPriority,
+            lowPriority,
+            taskCompletionRate,
+            startDates,
+            dueDates,
+            statuses,
+            durations,
+            groupTaskCounts: groupTaskCountsArray
         });
+
+
     } catch (error) {
         console.error('Error fetching task statistics:', error);
         res.status(500).json({ error: 'Internal server error' });
