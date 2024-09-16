@@ -12,22 +12,31 @@ import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
     });
 
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Or a loading spinner
+  }
 
   return (
     <Router>
       <div className="App">
-        <Navbar />
+        <Navbar session={session} />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -36,11 +45,11 @@ function App() {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route 
             path="/profile" 
-            element={user ? <ProfilePage /> : <Navigate to="/login" />} 
+            element={session ? <ProfilePage /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/dashboard" 
-            element={user ? <DashboardPage /> : <Navigate to="/login" />} 
+            element={session ? <DashboardPage /> : <Navigate to="/login" />} 
           />
         </Routes>
         <Footer />

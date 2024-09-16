@@ -2,19 +2,8 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 
-const Navbar = () => {
-  const [user, setUser] = React.useState(null);
+const Navbar = ({ session }) => {
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
 
   const handleLogout = async () => {
     try {
@@ -32,7 +21,7 @@ const Navbar = () => {
       <div style={styles.navItems}>
         <Link to="/" style={styles.navLink}>HOME</Link>
         <Link to="/project" style={styles.navLink}>PROJECT</Link>
-        {user ? (
+        {session ? (
           <>
             <Link to="/dashboard" style={styles.navLink}>DASHBOARD</Link>
             <Link to="/profile" style={styles.navLink}>PROFILE</Link>

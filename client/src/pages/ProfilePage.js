@@ -2,17 +2,77 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import Footer from '../components/Footer';
 
+const EditableField = ({ label, value, field, userId, onUpdate }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(value);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditValue(value);
+  };
+
+  const handleSave = async () => {
+    try {
+      const { error } = await supabase
+        .from('Users')
+        .update({ [field]: editValue })
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      onUpdate(field, editValue);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating field:', error);
+    }
+  };
+
+  const getIconForField = (field) => {
+    switch (field) {
+      case 'username': return '👤';
+      case 'role': return '👥';
+      case 'email': return '✉️';
+      case 'phone_number': return '📞';
+      default: return '❓';
+    }
+  };
+
+  return (
+    <div style={styles.infoGroup}>
+      <div style={styles.labelRow}>
+        <span style={styles.icon}>{getIconForField(field)}</span>
+        <span style={styles.infoLabel}>{label}</span>
+      </div>
+      {isEditing ? (
+        <div style={styles.editContainer}>
+          <input
+            type="text"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            style={styles.input}
+          />
+          <div style={styles.buttonContainer}>
+            <button onClick={handleSave} style={styles.saveButton}>Save</button>
+            <button onClick={() => setIsEditing(false)} style={styles.cancelButton}>Cancel</button>
+          </div>
+        </div>
+      ) : (
+        <span style={styles.infoText} onClick={handleEdit}>{value}</span>
+      )}
+    </div>
+  );
+};
+
 const ProfilePage = () => {
   const [avatar, setAvatar] = useState('/person.png');
   const [name, setName] = useState('Unknown');
   const [role, setRole] = useState('Unknown');
   const [email, setEmail] = useState('Unknown');
   const [phone, setPhone] = useState('Unknown');
-  const [editingField, setEditingField] = useState(null);
-  const [inputValue, setInputValue] = useState('');
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   useEffect(() => {
     fetchUserProfile();
@@ -24,7 +84,6 @@ const ProfilePage = () => {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError) throw authError;
 
-      console.log("Authenticated user:", user);
       if (user) {
         setUserId(user.id);
         setEmail(user.email || 'Unknown');
@@ -37,11 +96,11 @@ const ProfilePage = () => {
 
         if (error) throw error;
 
-        console.log("Fetched user data:", data);
         if (data) {
           setName(data.username || 'Unknown');
           setRole(data.role || 'Unknown');
           setPhone(data.phone_number || 'Unknown');
+          setAvatar(data.avatar_url || '/person.png');
         }
       }
     } catch (error) {
@@ -52,63 +111,49 @@ const ProfilePage = () => {
     }
   };
 
-  const startEditing = (field) => {
-    setEditingField(field);
-    setInputValue('');
-  };
+  const handleAvatarUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  const saveEdit = async () => {
     try {
-      const updates = {};
-      if (editingField === 'name') updates.username = inputValue || name;
-      if (editingField === 'role') updates.role = inputValue || role;
-      if (editingField === 'phone') updates.phone_number = inputValue || phone;
-
-      const { error } = await supabase
+      setIsLoading(true);
+      const base64 = await convertToBase64(file);
+      
+      const { error: updateError } = await supabase
         .from('Users')
-        .update(updates)
+        .update({ avatar_url: base64 })
         .eq('user_id', userId);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
-      fetchUserProfile();
-      setEditingField(null);
+      setAvatar(base64);
+      setIsAvatarModalOpen(false);
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error uploading avatar:', error);
       setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const cancelEdit = () => {
-    setEditingField(null);
-    setInputValue('');
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
-  const renderEditableField = (label, value, field) => (
-    <div style={styles.infoGroup}>
-      <div style={styles.labelRow}>
-        <span style={styles.icon}>{getIconForField(field)}</span>
-        <span style={styles.infoLabel}>{label}</span>
-      </div>
-      {editingField === field ? (
-        <div className="edit-container" style={styles.editContainer}>
-          <input
-            type="text"
-            value={inputValue}
-            placeholder={value}
-            onChange={(e) => setInputValue(e.target.value)}
-            style={styles.input}
-          />
-          <div style={styles.buttonContainer}>
-            <img src="/save.png" alt="Save" style={styles.saveButton} onClick={saveEdit} />
-            <img src="/cancel.png" alt="Cancel" style={styles.cancelButton} onClick={cancelEdit} />
-          </div>
-        </div>
-      ) : (
-        <span style={styles.infoText} onClick={() => startEditing(field)}>{value}</span>
-      )}
-    </div>
-  );
+  const handleFieldUpdate = (field, value) => {
+    switch (field) {
+      case 'username': setName(value); break;
+      case 'role': setRole(value); break;
+      case 'email': setEmail(value); break;
+      case 'phone_number': setPhone(value); break;
+      default: break;
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -120,29 +165,40 @@ const ProfilePage = () => {
       ) : (
         <div style={styles.contentContainer}>
           <div style={styles.leftContainer}>
-            <img src={avatar} alt="Avatar" style={styles.avatar} />
+            <div style={styles.avatarContainer}>
+              <img src={avatar} alt="Avatar" style={styles.avatar} />
+              <button onClick={() => setIsAvatarModalOpen(true)} style={styles.changeAvatarButton}>
+                Change Avatar
+              </button>
+            </div>
           </div>
           <div style={styles.rightContainer}>
-            {renderEditableField('NAME', name, 'name')}
-            {renderEditableField('ROLE', role, 'role')}
-            {renderEditableField('EMAIL', email, 'email')}
-            {renderEditableField('PHONE', phone, 'phone')}
+            <EditableField label="NAME" value={name} field="username" userId={userId} onUpdate={handleFieldUpdate} />
+            <EditableField label="ROLE" value={role} field="role" userId={userId} onUpdate={handleFieldUpdate} />
+            <EditableField label="EMAIL" value={email} field="email" userId={userId} onUpdate={handleFieldUpdate} />
+            <EditableField label="PHONE" value={phone} field="phone_number" userId={userId} onUpdate={handleFieldUpdate} />
+          </div>
+        </div>
+      )}
+      {isAvatarModalOpen && (
+        <div style={styles.modal}>
+          <div style={styles.modalContent}>
+            <h2 style={styles.modalTitle}>Upload New Avatar</h2>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              style={styles.fileInput}
+            />
+            <button onClick={() => setIsAvatarModalOpen(false)} style={styles.closeButton}>
+              Cancel
+            </button>
           </div>
         </div>
       )}
       <Footer />
     </div>
   );
-};
-
-const getIconForField = (field) => {
-  switch (field) {
-    case 'name': return '👤';
-    case 'role': return '👥';
-    case 'email': return '✉️';
-    case 'phone': return '📞';
-    default: return '❓';
-  }
 };
 
 const styles = {
@@ -190,11 +246,25 @@ const styles = {
     marginLeft: '100px',
     marginTop: '-100px',
   },
+  avatarContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
   avatar: {
     width: '400px',
     height: '400px',
     borderRadius: '50%',
     marginBottom: '50px',
+    cursor: 'pointer',
+  },
+  changeAvatarButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
     cursor: 'pointer',
   },
   infoGroup: {
@@ -253,35 +323,49 @@ const styles = {
     marginLeft: '10px',
   },
   saveButton: {
-    width: '24px',
-    height: '24px',
+    padding: '5px 10px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '3px',
     cursor: 'pointer',
     marginRight: '5px',
   },
   cancelButton: {
-    width: '24px',
-    height: '24px',
+    padding: '5px 10px',
+    backgroundColor: '#f44336',
+    color: 'white',
+    border: 'none',
+    borderRadius: '3px',
     cursor: 'pointer',
   },
   modal: {
     position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#142924',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
     padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.3)',
-    cursor: 'move', 
+    borderRadius: '5px',
+    textAlign: 'center',
+  },
+  modalTitle: {
+    marginBottom: '20px',
   },
   fileInput: {
-    marginBottom: '10px',
-    color: '#FFFFFF',
+    marginBottom: '20px',
   },
   closeButton: {
-    backgroundColor: '#5A5E63',
-    color: '#FFFFFF',
     padding: '10px 20px',
+    backgroundColor: '#f44336',
+    color: 'white',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
