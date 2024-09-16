@@ -1,61 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
+import '../styles/Navbar.css';
 
-const NavBar = () => {
+const Navbar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+
   return (
-    <nav style={styles.navbar}>
-      <div style={styles.logo}>
-        <img src="/logo192.png" alt="Logo" style={styles.logoImage} />
-        <span style={styles.logoText}>AASYP.ORG</span>
+    <nav className="navbar">
+      <div className="navbar-logo">
+        <img src="/AASYP-Logo-FC-Transparent.png" alt="Logo" />
       </div>
-      <div style={styles.navLinks}>
-        <a href="/" style={styles.navLink}>HOME</a>
-        <a href="/project" style={styles.navLink}>PROJECT</a>
-        <a href="/dashboard" style={styles.navLink}>DASHBOARD</a>
-        <a href="/profile" style={styles.navLink}>PROFILE</a>
-        <a href="/login" style={styles.navLink}>LOGIN</a>
-        <img src="/person.png" alt="User" style={styles.userImage} /> {/* 添加用户状态图片 */}
-      </div>
+      <ul className="navbar-menu">
+        <li><a href="/">HOME</a></li>
+        <li><a href="/project">PROJECT</a></li>
+        <li><a href="/dashboard">DASHBOARD</a></li>
+        <li><a href="/profile">PROFILE</a></li>
+        {isLoggedIn && (
+<li className="navbar-avatar">
+            <img src="Capstone-Project21/client/public/logout avatar copy.png" alt="User Avatar" />
+          </li>
+        )}
+      </ul>
+      {!isLoggedIn && (
+        <div className="navbar-login">
+          <a href="/login">LOGIN</a>
+        </div>
+      )}
     </nav>
   );
-};
+}
 
-const styles = {
-  navbar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#2E4A29',
-    padding: '10px 20px',
-  },
-  logo: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  logoImage: {
-    height: '30px',
-    marginRight: '10px',
-  },
-  logoText: {
-    color: '#FFFFFF',
-    fontSize: '20px',
-    fontWeight: 'bold',
-  },
-  navLinks: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px',
-  },
-  navLink: {
-    color: '#FFFFFF',
-    textDecoration: 'none',
-    fontSize: '16px',
-  },
-  userImage: {
-    height: '30px',
-    borderRadius: '50%', // 圆形头像
-    marginLeft: '20px',
-    cursor: 'pointer', // 鼠标悬停时变为手型图标
-  },
-};
-
-export default NavBar;
+export default Navbar;
