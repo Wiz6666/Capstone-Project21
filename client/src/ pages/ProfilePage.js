@@ -220,7 +220,7 @@ const ProfilePage = () => {
           <div style={styles.infoGroup}>
             <div style={styles.labelRow}>
               <span style={styles.icon}>📱</span>
-              <span style={styles.infoLabel}>MOBILE PHONE</span>
+              <span style={styles.infoLabel}>MOBILE</span>
             </div>
             {editingField === 'mobilePhone' ? (
               <div className="edit-container" style={styles.editContainer}>
@@ -262,7 +262,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    paddingTop: '100px',
+    paddingTop: '0px', // 将此值从100px改为50px
     paddingLeft: '300px',
     boxSizing: 'border-box',
   },
@@ -334,7 +334,6 @@ const styles = {
     marginTop: '5px',
     fontWeight: 'bold',
     cursor: 'pointer',
-    
   },
   editContainer: {
     display: 'flex',
@@ -395,5 +394,6 @@ const styles = {
     cursor: 'pointer',
   },
 };
+
 
 export default ProfilePage;

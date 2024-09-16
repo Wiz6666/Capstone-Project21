@@ -14,7 +14,6 @@ const ResetPasswordPage = () => {
         <input type="password" placeholder="Confirm your password" className="input-placeholder" style={styles.input} />
         <button type="button" style={styles.button}>Change</button>
       </div>
-      <Footer /> {/* 在页面中使用 Footer 组件 */}
     </div>
   );
 };
@@ -52,10 +51,10 @@ const styles = {
   subtitle: {
     fontSize: '20px',  // 增大字体大小
     color: '#FFFFFF',
-    marginBottom: '50px',  // 增大与输入框的间距
+    marginBottom: '30px',  // 增大与输入框的间距
   },
   input: {
-    width: '60%',  // 调整宽度
+    width: '80%',  // 调整宽度
     padding: '15px',  // 增大内边距
     marginBottom: '20px',  // 增大与按钮的间距
     fontSize: '16px',
@@ -67,7 +66,7 @@ const styles = {
     outline: 'none',
   },
   button: {
-    width: '40%',  // 调整宽度
+    width: '50%',  // 调整宽度，使按钮居中
     padding: '15px',  // 增大内边距
     fontSize: '18px',
     borderRadius: '20px',  // 调整圆角大小
@@ -75,6 +74,7 @@ const styles = {
     backgroundColor: '#5A5E63',
     color: '#FFFFFF',
     cursor: 'pointer',
+    marginTop: '20px', // 给按钮增加一点顶部间距
   },
 };
 

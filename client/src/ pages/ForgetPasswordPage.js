@@ -26,7 +26,6 @@ const ForgetPasswordPage = () => {
           Continue
         </button>
       </div>
-      <Footer /> {/* 在页面中使用 Footer 组件 */}
     </div>
   );
 };
@@ -64,12 +63,12 @@ const styles = {
   subtitle: {
     fontSize: '30px',  // 增大字体大小
     color: '#FFFFFF',
-    marginBottom: '50px',  // 增大与输入框的间距
+    marginBottom: '30px',  // 增大与输入框的间距
   },
   input: {
-    width: '60%',  // 调整宽度
+    width: '80%',  // 增大宽度，使输入框占据更大空间
     padding: '15px',  // 增大内边距
-    marginBottom: '30px',  // 增大与按钮的间距
+    marginBottom: '20px',  // 增大与按钮的间距
     fontSize: '16px',
     borderRadius: '20px',  // 调整圆角大小
     border: '1px solid #FFFFFF',
@@ -79,7 +78,7 @@ const styles = {
     outline: 'none',
   },
   button: {
-    width: '40%',  // 调整宽度
+    width: '60%',  // 调整宽度，使按钮居中
     padding: '15px',  // 增大内边距
     fontSize: '18px',
     borderRadius: '20px',  // 调整圆角大小
