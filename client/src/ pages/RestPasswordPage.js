@@ -1,5 +1,4 @@
 import React from 'react';
-import Footer from '../components/Footer'; // 导入 Footer 组件
 
 const ResetPasswordPage = () => {
   return (

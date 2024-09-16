@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // 导入 useNavigate
-import Footer from '../components/Footer'; // 导入 Footer 组件
 
 const ForgetPasswordPage = () => {
   const navigate = useNavigate(); // 使用 useNavigate 进行导航

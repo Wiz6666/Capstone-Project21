@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from '../components/Footer'; // 导入 Footer 组件
 import { FaGoogle } from 'react-icons/fa'; // 导入谷歌图标
 
 const LoginPage = () => {
@@ -46,7 +45,6 @@ const LoginPage = () => {
           </form>
         </div>
       </div>
-      <Footer /> {/* 在页面中使用 Footer 组件 */}
     </div>
   );
 };

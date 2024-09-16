@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Footer from '../components/Footer'; // 导入 Footer 组件
 
 const ProfilePage = () => {
   const [avatar, setAvatar] = useState('/person.png');
@@ -248,7 +247,6 @@ const ProfilePage = () => {
           <button onClick={() => setShowModal(false)} style={styles.closeButton}>Cancel</button>
         </div>
       )}
-      <Footer /> {/* 在页面中使用 Footer 组件 */}
     </div>
   );
 };
