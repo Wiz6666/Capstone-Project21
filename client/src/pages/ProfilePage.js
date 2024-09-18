@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import Footer from '../components/Footer';
 
 const EditableField = ({ label, value, field, userId, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
+  const inputRef = useRef(null);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -27,6 +27,25 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
     }
   };
 
+  const handleClickOutside = (event) => {
+    if (isEditing && inputRef.current && !inputRef.current.contains(event.target)) {
+      setIsEditing(false);
+      setEditValue(value); 
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isEditing]);
+
   const getIconForField = (field) => {
     switch (field) {
       case 'username': return '👤';
@@ -44,7 +63,7 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
         <span style={styles.infoLabel}>{label}</span>
       </div>
       {isEditing ? (
-        <div style={styles.editContainer}>
+        <div style={styles.editContainer} ref={inputRef}>
           <input
             type="text"
             value={editValue}
@@ -63,6 +82,9 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
   );
 };
 
+// ProfilePage component remains the same as before
+
+
 const ProfilePage = () => {
   const [avatar, setAvatar] = useState('/person.png');
   const [name, setName] = useState('Unknown');
@@ -73,6 +95,8 @@ const ProfilePage = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [tempAvatar, setTempAvatar] = useState(null); // 临时预览头像
+  const avatarModalRef = useRef(null); // 用于检测点击是否在头像区域外
 
   useEffect(() => {
     fetchUserProfile();
@@ -115,8 +139,10 @@ const ProfilePage = () => {
     const file = event.target.files[0];
     if (!file) return;
 
+    setTempAvatar(URL.createObjectURL(file)); 
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
       const base64 = await convertToBase64(file);
       
       const { error: updateError } = await supabase
@@ -126,15 +152,33 @@ const ProfilePage = () => {
 
       if (updateError) throw updateError;
 
-      setAvatar(base64);
+      setAvatar(base64); 
       setIsAvatarModalOpen(false);
     } catch (error) {
       console.error('Error uploading avatar:', error);
       setError(error.message);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); 
     }
   };
+
+  const handleClickOutside = (event) => {
+    if (isAvatarModalOpen && avatarModalRef.current && !avatarModalRef.current.contains(event.target)) {
+      setIsAvatarModalOpen(false);
+      setTempAvatar(null); 
+    }
+  };
+
+  useEffect(() => {
+    if (isAvatarModalOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isAvatarModalOpen]);
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -166,7 +210,12 @@ const ProfilePage = () => {
         <div style={styles.contentContainer}>
           <div style={styles.leftContainer}>
             <div style={styles.avatarContainer}>
-              <img src={avatar} alt="Avatar" style={styles.avatar} />
+              <img 
+                src={tempAvatar || avatar} 
+                alt="Avatar" 
+                style={styles.avatar} 
+                onClick={() => setIsAvatarModalOpen(true)} 
+              />
               <button onClick={() => setIsAvatarModalOpen(true)} style={styles.changeAvatarButton}>
                 Change Avatar
               </button>
@@ -182,7 +231,7 @@ const ProfilePage = () => {
       )}
       {isAvatarModalOpen && (
         <div style={styles.modal}>
-          <div style={styles.modalContent}>
+          <div style={styles.modalContent} ref={avatarModalRef}>
             <h2 style={styles.modalTitle}>Upload New Avatar</h2>
             <input
               type="file"
@@ -196,7 +245,6 @@ const ProfilePage = () => {
           </div>
         </div>
       )}
-      <Footer />
     </div>
   );
 };

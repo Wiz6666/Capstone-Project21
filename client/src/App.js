@@ -9,8 +9,9 @@ import LoginPage from './pages/LoginPage';
 import ForgetPasswordPage from './pages/ForgetPasswordPage';
 import ResetPasswordPage from './pages/RestPasswordPage';
 import ProfilePage from './pages/ProfilePage';
-import DashboardPage from './pages/DashboardPage';
-
+import DashboardPage from './pages/Dashboard';
+import TaskList from './pages/TaskPage'
+import TaskDetails from './pages/DetailPage'
 function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,6 +44,10 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgetPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/project" element={<TaskList />} />
+          <Route path="/tasks/:id" element={<TaskDetails />} />
+
+
           <Route 
             path="/profile" 
             element={session ? <ProfilePage /> : <Navigate to="/login" />} 
@@ -51,6 +56,7 @@ function App() {
             path="/dashboard" 
             element={session ? <DashboardPage /> : <Navigate to="/login" />} 
           />
+
         </Routes>
         <Footer />
       </div>

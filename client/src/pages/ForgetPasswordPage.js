@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 导入 useNavigate
-import Footer from '../components/Footer'; // 导入 Footer 组件
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 
 const ForgetPasswordPage = () => {
-  const navigate = useNavigate(); // 使用 useNavigate 进行导航
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   const handleContinueClick = async () => {
     try {
-      // Dynamically construct the base URL
       const baseUrl = `${window.location.protocol}//${window.location.host}`;
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${baseUrl}/reset-password`,
       });
       if (error) throw error;
       setMessage('Password reset email sent. Please check your inbox.');
-      // Optionally navigate to a confirmation page
-      // navigate('/reset-password-confirmation');
+      setError(''); 
     } catch (error) {
       setError(error.message);
+      setMessage(''); 
     }
   };
 
@@ -38,7 +36,6 @@ const ForgetPasswordPage = () => {
         <input 
           type="email" 
           placeholder="Enter email address" 
-          className="input-placeholder" 
           style={styles.input} 
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -51,7 +48,6 @@ const ForgetPasswordPage = () => {
           Continue
         </button>
       </div>
-      <Footer /> {/* 在页面中使用 Footer 组件 */}
     </div>
   );
 };
@@ -61,7 +57,7 @@ const styles = {
     position: 'relative',
     height: '100vh',
     width: '100%',
-    background: 'linear-gradient(90deg, #142924 10%, rgba(101, 125, 131, 0.9) 90%)',  // 更加缓慢的渐变
+    background: 'linear-gradient(90deg, #142924 10%, rgba(101, 125, 131, 0.9) 90%)',  
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -71,11 +67,11 @@ const styles = {
     fontSize: '60px',
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: '60px', // 增大距离下方框的间距
+    marginBottom: '60px', 
     textAlign: 'center',
     textTransform: 'uppercase',
     letterSpacing: '2px',
-    marginTop: '-100px',  // 将位置上移
+    marginTop: '-100px', 
   },
   overlay: {
     backgroundColor: '#142924',
@@ -87,31 +83,42 @@ const styles = {
     boxShadow: '0px 4px 30px rgba(0, 0, 0, 0.25)',
   },
   subtitle: {
-    fontSize: '30px',  // 增大字体大小
+    fontSize: '30px',  
     color: '#FFFFFF',
-    marginBottom: '50px',  // 增大与输入框的间距
+    marginBottom: '30px',  
   },
   input: {
-    width: '60%',  // 调整宽度
-    padding: '15px',  // 增大内边距
-    marginBottom: '30px',  // 增大与按钮的间距
+    width: '80%', 
+    padding: '15px',  
+    marginBottom: '20px', 
     fontSize: '16px',
-    borderRadius: '20px',  // 调整圆角大小
+    borderRadius: '20px',  
     border: '1px solid #FFFFFF',
     backgroundColor: 'transparent',
-    color: '#FFFFFF',  // 输入文字颜色为白色
+    color: '#FFFFFF', 
     textAlign: 'center',
     outline: 'none',
   },
   button: {
-    width: '40%',  // 调整宽度
-    padding: '15px',  // 增大内边距
+    width: '60%',  
+    padding: '15px',  
     fontSize: '18px',
-    borderRadius: '20px',  // 调整圆角大小
+    borderRadius: '20px', 
     border: 'none',
     backgroundColor: '#5A5E63',
     color: '#FFFFFF',
     cursor: 'pointer',
+  },
+
+  message: {
+    color: '#4CAF50', 
+    marginBottom: '20px',
+    fontSize: '18px',  
+  },
+  error: {
+    color: '#F44336', 
+    marginBottom: '20px',
+    fontSize: '18px',  
   },
 };
 

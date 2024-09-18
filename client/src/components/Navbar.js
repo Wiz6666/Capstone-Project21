@@ -20,11 +20,13 @@ const Navbar = ({ session }) => {
       <div style={styles.logo}>AASYP.ORG</div>
       <div style={styles.navItems}>
         <Link to="/" style={styles.navLink}>HOME</Link>
-        <Link to="/project" style={styles.navLink}>PROJECT</Link>
+        
         {session ? (
           <>
+            <Link to="/project" style={styles.navLink}>PROJECT</Link>
             <Link to="/dashboard" style={styles.navLink}>DASHBOARD</Link>
             <Link to="/profile" style={styles.navLink}>PROFILE</Link>
+            
             <button onClick={handleLogout} style={styles.logoutButton}>LOGOUT</button>
           </>
         ) : (
