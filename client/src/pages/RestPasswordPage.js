@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import Footer from '../components/Footer';
 import { supabase } from '../supabaseClient';
 
 const ResetPasswordPage = () => {
@@ -72,7 +71,6 @@ const ResetPasswordPage = () => {
         </form>
         <Link to="/login" style={styles.backLink}>Back to Login</Link>
       </div>
-      <Footer />
     </div>
   );
 };
@@ -113,9 +111,10 @@ const styles = {
     marginBottom: '50px',
   },
   input: {
-    width: '60%',
-    padding: '15px',
-    marginBottom: '30px',
+    display: 'block',
+    width: '80%', 
+    padding: '15px', 
+    margin: '0 auto 20px auto', 
     fontSize: '16px',
     borderRadius: '20px',
     border: '1px solid #FFFFFF',
@@ -125,7 +124,8 @@ const styles = {
     outline: 'none',
   },
   button: {
-    width: '40%',
+    display: 'block',
+    width: '80%',  
     padding: '15px',
     fontSize: '18px',
     borderRadius: '20px',
@@ -133,6 +133,7 @@ const styles = {
     backgroundColor: '#5A5E63',
     color: '#FFFFFF',
     cursor: 'pointer',
+    margin: '0 auto', 
   },
   message: {
     color: '#4CAF50',
