@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 导入 useNavigate
-import Footer from '../components/Footer'; // 导入 Footer 组件
+import { useNavigate } from 'react-router-dom'; //  useNavigate
+import Footer from '../components/Footer'; //  Footer
 import { supabase } from '../supabaseClient';
 
 const ForgetPasswordPage = () => {
-  const navigate = useNavigate(); // 使用 useNavigate 进行导航
+  const navigate = useNavigate(); //  useNavigate
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
