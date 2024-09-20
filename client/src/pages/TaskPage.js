@@ -12,6 +12,7 @@ const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TaskList = () => {
+    const [users, setUsers] = useState([]);
     const [tasks, setTasks] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showModal, setShowModal] = useState(false);
@@ -56,10 +57,24 @@ const TaskList = () => {
         { name: 'Group', field: 'group_name' }
     ]);
 
+    const fetchUsers = async () => {
+        const { data: usersData, error } = await supabase.from('Users').select('user_id, username');
+        if (error) {
+          console.error('Error fetching users:', error);
+        } else {
+          setUsers(usersData);
+          console.log(usersData);
+        }
+      };
+
+    useEffect(() => {
+        fetchUsers();
+      }, []);
+
     const fetchTasks = async (query = '') => {
         const { data, error } = await supabase
             .from('tasks')
-            .select('*')
+            .select('*, Users:owner_id (username)')
             .or(`task_name.ilike.%${query}%,task_description.ilike.%${query}%`)
             .order(sortColumn, { ascending: sortOrder === 'asc' });
     
@@ -125,29 +140,53 @@ const TaskList = () => {
 
     const handleNewTaskSubmit = async (e) => {
         e.preventDefault();
-
+    
         const { task_name, task_description, owner_id, start_date, due_date, task_status, priority, group_name } = newTask;
-
-        // Insert new task into Supabase database
-        const { data, error } = await supabase
-            .from('tasks')
-            .insert([
-                { task_name, task_description, owner_id, start_date, due_date, task_status, priority, group_name },
-            ]);
-
-        if (error) {
-            console.error('Error adding new task:', error);
-        } 
-        else {
-            if (Array.isArray(data)) {
-                setTasks(prevTasks => [...prevTasks, ...data]);
-            } else {
-                console.error('Expected data to be an array, but got:', data);
+    
+        try {
+            // Fetch the owner_id (UUID) based on the username
+            const { data: userData, error: userError } = await supabase
+                .from('Users')
+                .select('user_id') // Assuming 'user_id' is the column for UUID in the Users table
+                .eq('username', owner_id) // 'owner_id' here refers to the username
+                .single(); // We expect only one user per username
+    
+            if (userError) {
+                console.error('Error fetching user ID:', userError);
+                return;
             }
-            fetchTasks();
-            closeModal();
+    
+            const actualOwnerId = userData?.user_id;
+    
+            if (!actualOwnerId) {
+                console.error('No matching user found for the provided username.');
+                return;
+            }
+    
+            // Insert new task into Supabase database with the actual owner_id (UUID)
+            const { data, error } = await supabase
+                .from('tasks')
+                .insert([
+                    { task_name, task_description, owner_id: actualOwnerId, start_date, due_date, task_status, priority, group_name },
+                ]);
+    
+            if (error) {
+                console.error('Error adding new task:', error);
+            } else {
+                if (Array.isArray(data)) {
+                    console.log('New task added:', data);
+                    setTasks(prevTasks => [...prevTasks, ...data]);
+                } else {
+                    console.error('Expected data to be an array, but got:', data);
+                }
+    
+                await fetchTasks();
+                closeModal();
+            }
+        } catch (err) {
+            console.error('Error while adding new task:', err);
         }
-    };
+    };    
 
     const handleDeleteTask = async (id) => {
         if (selectedTaskIds.length === 0) {
@@ -191,15 +230,39 @@ const TaskList = () => {
         });
     };
 
-    const handleBlur = async (taskId) => {
+    const handleBlur = async (taskId, fieldName) => {
         try {
-            const { error } = await supabase.from('tasks').update(editedTask).eq('id', taskId);
-            if (error) {
-                console.error('Error updating task:', error);
-                return;
+            const validEditedTask = { ...editedTask };
+            
+            if (fieldName === 'owner_id'){
+                if (!editedTask.owner_id) {
+                    console.error('Invalid owner_id:', editedTask.owner_id);
+                    return;
+                }
+    
+                const { error } = await supabase
+                    .from('tasks')
+                    .update({ owner_id: editedTask.owner_id }) // Set the new owner_id
+                    .eq('id', taskId);
+    
+                if (error) {
+                    console.error('Error updating task owner:', error);
+                    return;
+                }
+
+                fetchTasks();
+            }
+            else{
+                delete validEditedTask.Users;
+
+                const { error } = await supabase.from('tasks').update(validEditedTask).eq('id', taskId);
+                if (error) {
+                    console.error('Error updating task:', error);
+                    return;
+                }
             }
             setTasks((prevTasks) =>
-                prevTasks.map((task) => (task.id === taskId ? { ...task, ...editedTask } : task))
+                prevTasks.map((task) => (task.id === taskId ? { ...task, ...validEditedTask } : task))
             );
             setEditingTaskId(null);    // Exit editing mode
             setEditingField(null);
@@ -210,7 +273,7 @@ const TaskList = () => {
 
     const applyFilters = async () => {
         try {
-          let query = supabase.from('tasks').select('*');
+          let query = supabase.from('tasks').select('*, Users:owner_id (username)');
       
           // Apply task_name filter
           if (filters.task_name) {
@@ -374,7 +437,7 @@ const TaskList = () => {
                         <th>Description</th>
                         <th>Owner</th>
                         <th>Start date</th>
-                        <th>Start date</th>
+                        <th>Due date</th>
                         <th>Status</th>
                         <th>Priority</th>
                         <th>Group</th>
@@ -415,16 +478,22 @@ const TaskList = () => {
                             </td>
                             <td onClick={() => handleFieldClick(task.id, 'owner_id')}>
                                 {editingTaskId === task.id && editingField === 'owner_id' ? (
-                                    <input
+                                    <select
                                         type="text"
                                         name="owner_id"
                                         value={editedTask.owner_id || ''}
                                         onChange={handleInputChange}
-                                        onBlur={() => handleBlur(task.id)}
+                                        onBlur={() => handleBlur(task.id, 'owner_id')}
                                         autoFocus
-                                    />
+                                    >
+                                        {users.map((user) => (
+                                        <option key={user.user_id} value={user.user_id}>
+                                          {user.username}
+                                        </option>
+                                      ))}
+                                    </select>
                                 ) : (
-                                    task.owner_id
+                                    task.Users.username || 'No Username'
                                 )}
                             </td>
                             <td onClick={() => handleFieldClick(task.id, 'start_date')}>
@@ -547,14 +616,20 @@ const TaskList = () => {
                         </Form.Group><br />
 
                         <Form.Group>
-                            <Form.Label>Task Owner ID</Form.Label>
-                            <Form.Control
-                                type="text"
+                            <Form.Label>Task Owner</Form.Label>
+                            <Form.Select
                                 name="owner_id"
                                 value={newTask.owner_id}
                                 onChange={handleInputChange}
                                 required
-                            />
+                            >
+                                <option value="">Select Owner</option>
+                                {users.map((user) => (
+                                    <option key={user.id} value={user.id}>
+                                        {user.username}
+                                    </option>
+                                ))}
+                            </Form.Select>
                         </Form.Group><br />
 
                         <Form.Group>
