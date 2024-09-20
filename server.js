@@ -166,6 +166,7 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
+//collect the data for dashboard
 app.get('/dashboard-data', async (req, res) => {
     try {
         console.log('Received request at /dashboard-data');
