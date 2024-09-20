@@ -19,12 +19,16 @@ const TaskDetails = () => {
       try {
         const { data, error } = await supabase
           .from('tasks')
-          .select('*')
+          .select('*, Users:owner_id (username, avatar_url)')
           .eq('id', id)
           .single();
 
         if (error) {
           throw error;
+        }
+
+        else {
+          console.log('Fetched task data:', data);
         }
 
         setTask(data);
@@ -48,7 +52,7 @@ const TaskDetails = () => {
       <h1>TASK DETAILS</h1>
       <div className="task-info">
         <p><strong>TASK TITLE:</strong> {task.task_name}</p>
-        <p><strong>ASSIGNEE:</strong> <img src="path_to_assignee_image" alt="assignee" className="assignee-image" /> {task.assignee}</p>
+        <p><strong>ASSIGNEE:</strong> <img src={task.Users.avatar_url} alt="User Avatar" className="avatar" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px'}}/> {task.Users.username}</p>
         <p><strong>TIME LINE:</strong> {task.start_date} - {task.due_date}</p>
         <p><strong>TASK STATUS:</strong> {task.task_status}</p>
         <p><strong>TASK PRIORITY:</strong> {task.priority}</p>
