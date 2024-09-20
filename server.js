@@ -9,7 +9,7 @@ require('dotenv').config();
 
 const { createClient } = require('@supabase/supabase-js');
 const app = express();
-const port = 5001;
+const port = 5001; // static local URLs  for backend
 app.listen(5001, () => {
     console.log('Server running on http://localhost:5001');
 });
