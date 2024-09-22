@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';  // Assuming supabase is initialized in this file
 import '../styles/Navbar.css';  // Importing CSS for navbar styling
 
 const Navbar = ({ session }) => {
@@ -49,7 +48,7 @@ const Navbar = ({ session }) => {
             </li>
           </>
         ) : (  // If user is not logged in
-          <li><Link to="/login">LOGIN</Link></li>  {/* Link to login page */}
+          <li><Link to="/login">LOGIN</Link></li>  
         )}
       </ul>
     </nav>
