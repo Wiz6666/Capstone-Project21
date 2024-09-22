@@ -2,22 +2,29 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 
+// Component for the Forget Password page
 const ForgetPasswordPage = () => {
   const navigate = useNavigate();
+  // State variables for email input, success message, and error message
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  // Function to handle the "Continue" button click
   const handleContinueClick = async () => {
     try {
+      // Get the base URL of the current page
       const baseUrl = `${window.location.protocol}//${window.location.host}`;
+      // Call Supabase API to send password reset email
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${baseUrl}/reset-password`,
       });
       if (error) throw error;
+      // Set success message if email is sent successfully
       setMessage('Password reset email sent. Please check your inbox.');
       setError(''); 
     } catch (error) {
+      // Set error message if there's an error
       setError(error.message);
       setMessage(''); 
     }
@@ -25,14 +32,19 @@ const ForgetPasswordPage = () => {
 
   return (
     <div style={styles.container}>
+      {/* Page title */}
       <h1 style={styles.title}>
         <span>FORGOT</span><br />
         <span>PASSWORD</span>
       </h1>
       <div style={styles.overlay}>
+        {/* Subtitle */}
         <h2 style={styles.subtitle}>ENTER YOUR EMAIL ADDRESS</h2>
+        {/* Display success message if exists */}
         {message && <p style={styles.message}>{message}</p>}
+        {/* Display error message if exists */}
         {error && <p style={styles.error}>{error}</p>}
+        {/* Email input field */}
         <input 
           type="email" 
           placeholder="Enter email address" 
@@ -40,6 +52,7 @@ const ForgetPasswordPage = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        {/* Continue button */}
         <button 
           type="button" 
           style={styles.button} 
@@ -52,6 +65,7 @@ const ForgetPasswordPage = () => {
   );
 };
 
+// Styles object for the component
 const styles = {
   container: {
     position: 'relative',

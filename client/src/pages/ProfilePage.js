@@ -13,14 +13,7 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
 
   const handleSave = async () => {
     try {
-      const { error } = await supabase
-        .from('Users')
-        .update({ [field]: editValue })
-        .eq('user_id', userId);
-
-      if (error) throw error;
-
-      onUpdate(field, editValue);
+      await onUpdate(field, editValue);
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating field:', error);
@@ -82,9 +75,6 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
   );
 };
 
-// ProfilePage component remains the same as before
-
-
 const ProfilePage = () => {
   const [avatar, setAvatar] = useState('/person.png');
   const [name, setName] = useState('Unknown');
@@ -93,10 +83,11 @@ const ProfilePage = () => {
   const [phone, setPhone] = useState('Unknown');
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
-  const [tempAvatar, setTempAvatar] = useState(null); // 临时预览头像
-  const avatarModalRef = useRef(null); // 用于检测点击是否在头像区域外
+  const [tempAvatar, setTempAvatar] = useState(null);
+  const avatarModalRef = useRef(null);
 
   useEffect(() => {
     fetchUserProfile();
@@ -125,6 +116,17 @@ const ProfilePage = () => {
           setRole(data.role || 'Unknown');
           setPhone(data.phone_number || 'Unknown');
           setAvatar(data.avatar_url || '/person.png');
+
+          // Check if email is verified and update if necessary
+          if (user.email !== data.email || data.email_change_pending) {
+            await supabase
+              .from('Users')
+              .update({ 
+                email: user.email,
+                email_change_pending: false 
+              })
+              .eq('user_id', user.id);
+          }
         }
       }
     } catch (error) {
@@ -189,11 +191,35 @@ const ProfilePage = () => {
     });
   };
 
-  const handleFieldUpdate = (field, value) => {
+  const updateEmail = async (newEmail) => {
+    try {
+      // Only update email in Supabase Auth
+      const { error: authError } = await supabase.auth.updateUser({ email: newEmail });
+      if (authError) throw authError;
+
+      // Don't update Users table immediately
+      // Display message to user
+      setMessage("Please check your new email to complete verification. Your profile will be updated after verification.");
+      
+      // Mark email as pending verification
+      await supabase
+        .from('Users')
+        .update({ email_change_pending: true })
+        .eq('user_id', userId);
+
+    } catch (error) {
+      console.error('Error updating email:', error);
+      setError(error.message);
+    }
+  };
+
+  const handleFieldUpdate = async (field, value) => {
     switch (field) {
       case 'username': setName(value); break;
       case 'role': setRole(value); break;
-      case 'email': setEmail(value); break;
+      case 'email': 
+        await updateEmail(value);
+        break;
       case 'phone_number': setPhone(value); break;
       default: break;
     }
@@ -229,6 +255,7 @@ const ProfilePage = () => {
           </div>
         </div>
       )}
+      {message && <p style={styles.message}>{message}</p>}
       {isAvatarModalOpen && (
         <div style={styles.modal}>
           <div style={styles.modalContent} ref={avatarModalRef}>
@@ -417,6 +444,28 @@ const styles = {
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
+  },
+  verifiedBadge: {
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    padding: '2px 6px',
+    borderRadius: '10px',
+    fontSize: '12px',
+    marginLeft: '10px',
+  },
+  unverifiedBadge: {
+    backgroundColor: '#f44336',
+    color: 'white',
+    padding: '2px 6px',
+    borderRadius: '10px',
+    fontSize: '12px',
+    marginLeft: '10px',
+  },
+  message: {
+    color: '#4CAF50',
+    fontSize: '16px',
+    marginTop: '20px',
+    textAlign: 'center',
   },
 };
 
