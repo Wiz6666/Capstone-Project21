@@ -1,12 +1,12 @@
 .footer {
-    position: sticky;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    background-color: transparent; 
-    padding: 10px 0;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    font-weight: bold;
+    position: sticky; /* The footer will stick to the bottom of the page, even as you scroll */
+    bottom: 0; /* Position it at the bottom of the viewport */
+    width: 100%; /* Ensure the footer takes up the full width of the page */
+    text-align: center; /* Center the text horizontally */
+    background-color: transparent; /* The background of the footer is transparent */
+    padding: 10px 0; /* Add padding on the top and bottom of the footer */
+    color: white; /* Set the text color to white */
+    font-family: Arial, sans-serif; /* Set the font family to Arial or fallback to sans-serif */
+    font-size: 14px; /* Set the font size of the text */
+    font-weight: bold; /* Make the text bold */
 }

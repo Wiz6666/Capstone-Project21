@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import '../styles/DashboardPage.css';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-const COLORS = ['#0088FE', '#FF8042', '#FFBB28'];
+const COLORS = ['#0088FE', '#FF8042', '#FFBB28']; // Define colors for pie chart segments
 
 const DashboardPage = () => {
+  // State to store data for first page dashboard
   const [dashboardData, setDashboardData] = useState({
     totalTasks: 0,
     toDoTasks: 0,
@@ -12,6 +13,7 @@ const DashboardPage = () => {
     completedTasks: 0,
   });
 
+  // State to store data for second page dashboard
   const [additionalData, setAdditionalData] = useState({
     taskPriorityLow: 0,
     taskPriorityMedium: 0,
@@ -19,8 +21,9 @@ const DashboardPage = () => {
     taskCompletionRate: 0,
   });
 
+  // Fetch dashboard data from backend API on component mount
   useEffect(() => {
-    // Fetch data for first page from the backend API
+    // Fetch data for first dashboard page
     fetch('/dashboard-data')
       .then(response => response.json())
       .then(data => {
@@ -33,7 +36,7 @@ const DashboardPage = () => {
       })
       .catch(error => console.error('Error fetching data:', error));
 
-    // Fetch data for second page from another API endpoint
+    // Fetch additional data for second dashboard page
     fetch('/additional-dashboard-data')
       .then(response => response.json())
       .then(data => {
@@ -45,22 +48,23 @@ const DashboardPage = () => {
         });
       })
       .catch(error => console.error('Error fetching additional data:', error));
-  }, []);
+  }, []); // Empty dependency array ensures this only runs once when the component mounts
 
-  // Data for first page charts
+  // Data for pie chart on the first page
   const dataPie = [
     { name: 'Completed', value: dashboardData.completedTasks },
     { name: 'In Progress', value: dashboardData.inProgressTasks },
     { name: 'To Do', value: dashboardData.toDoTasks },
   ];
 
+  // Data for bar chart on the first page
   const dataBar = [
     { name: 'To Do', tasks: dashboardData.toDoTasks },
     { name: 'In Progress', tasks: dashboardData.inProgressTasks },
     { name: 'Completed', tasks: dashboardData.completedTasks },
   ];
 
-  // Data for second page charts
+  // Data for pie chart on the second page
   const dataPriorityPie = [
     { name: 'Low Priority', value: additionalData.taskPriorityLow },
     { name: 'Medium Priority', value: additionalData.taskPriorityMedium },
@@ -69,10 +73,11 @@ const DashboardPage = () => {
 
   return (
     <div className="dashboard-container">
-      {/* 第一个子页面 */}
+      {/* First page of the dashboard */}
       <div className="dashboard-content">
         <h1>PMS DASHBOARD - PAGE 1</h1>
         <div className="task-cards">
+          {/* Display cards for different task statistics */}
           <div className="task-card">
             <h2>COMPLETED TASKS</h2>
             <p>{dashboardData.completedTasks}</p>
@@ -94,10 +99,13 @@ const DashboardPage = () => {
             <span>Task count</span>
           </div>
         </div>
+
+        {/* Charts for task completion status */}
         <div className="charts">
           <div className="chart">
             <h2>ALL TASKS BY COMPLETION STATUS</h2>
             <PieChart width={250} height={250}>
+              {/* Pie chart showing task completion status */}
               <Pie
                 data={dataPie}
                 cx="50%"
@@ -115,6 +123,7 @@ const DashboardPage = () => {
           </div>
           <div className="chart">
             <h2>INCOMPLETED TASKS BY GROUP</h2>
+            {/* Bar chart showing tasks grouped by status */}
             <BarChart
               width={350}
               height={250}
@@ -134,10 +143,11 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      {/* 第二个子页面 */}
+      {/* Second page of the dashboard */}
       <div className="dashboard-content">
         <h1>PMS DASHBOARD - PAGE 2</h1>
         <div className="task-cards">
+          {/* Display cards for task priority and completion rate */}
           <div className="task-card">
             <h2>LOW PRIORITY TASKS</h2>
             <p>{additionalData.taskPriorityLow}</p>
@@ -159,9 +169,12 @@ const DashboardPage = () => {
             <span>Completion rate</span>
           </div>
         </div>
+
+        {/* Charts for task priority and completion rate */}
         <div className="charts">
           <div className="chart">
             <h2>TASK PRIORITY DISTRIBUTION</h2>
+            {/* Pie chart showing distribution of task priorities */}
             <PieChart width={250} height={250}>
               <Pie
                 data={dataPriorityPie}
@@ -180,6 +193,7 @@ const DashboardPage = () => {
           </div>
           <div className="chart">
             <h2>TASK COMPLETION RATE</h2>
+            {/* Bar chart showing the overall task completion rate */}
             <BarChart
               width={350}
               height={250}
