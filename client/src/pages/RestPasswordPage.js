@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 
@@ -100,7 +99,6 @@ const ResetPasswordPage = () => {
   );
 };
 
-eisi
 // Styles object
 
 const styles = {
