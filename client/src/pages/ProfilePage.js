@@ -13,7 +13,9 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
 
   const handleSave = async () => {
     try {
+
       await onUpdate(field, editValue);
+
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating field:', error);
@@ -75,6 +77,7 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
   );
 };
 
+
 const ProfilePage = () => {
   const [avatar, setAvatar] = useState('/person.png');
   const [name, setName] = useState('Unknown');
@@ -83,11 +86,13 @@ const ProfilePage = () => {
   const [phone, setPhone] = useState('Unknown');
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState(null);
+
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [tempAvatar, setTempAvatar] = useState(null);
   const avatarModalRef = useRef(null);
+
 
   useEffect(() => {
     fetchUserProfile();
@@ -117,6 +122,7 @@ const ProfilePage = () => {
           setPhone(data.phone_number || 'Unknown');
           setAvatar(data.avatar_url || '/person.png');
 
+
           // Check if email is verified and update if necessary
           if (user.email !== data.email || data.email_change_pending) {
             await supabase
@@ -127,6 +133,7 @@ const ProfilePage = () => {
               })
               .eq('user_id', user.id);
           }
+
         }
       }
     } catch (error) {
@@ -191,6 +198,7 @@ const ProfilePage = () => {
     });
   };
 
+
   const updateEmail = async (newEmail) => {
     try {
       // Only update email in Supabase Auth
@@ -220,6 +228,7 @@ const ProfilePage = () => {
       case 'email': 
         await updateEmail(value);
         break;
+
       case 'phone_number': setPhone(value); break;
       default: break;
     }
@@ -255,7 +264,9 @@ const ProfilePage = () => {
           </div>
         </div>
       )}
+
       {message && <p style={styles.message}>{message}</p>}
+
       {isAvatarModalOpen && (
         <div style={styles.modal}>
           <div style={styles.modalContent} ref={avatarModalRef}>
@@ -445,6 +456,7 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
+
   verifiedBadge: {
     backgroundColor: '#4CAF50',
     color: 'white',
@@ -470,3 +482,4 @@ const styles = {
 };
 
 export default ProfilePage;
+

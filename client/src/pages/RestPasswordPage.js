@@ -1,15 +1,20 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+
+
 import { supabase } from '../supabaseClient';
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     // Get access_token from URL
@@ -30,6 +35,7 @@ const ResetPasswordPage = () => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
+
       return;
     }
     setIsLoading(true);
@@ -40,6 +46,7 @@ const ResetPasswordPage = () => {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
       setMessage('Password updated successfully. Redirecting to login page...');
+
       setTimeout(() => navigate('/login'), 3000);
     } catch (error) {
       setError(error.message);
@@ -56,6 +63,8 @@ const ResetPasswordPage = () => {
       </h1>
       <div style={styles.overlay}>
         <h2 style={styles.subtitle}>Enter your new password</h2>
+
+
         {message && <p style={styles.message}>{message}</p>}
         {error && <p style={styles.error}>{error}</p>}
         <form onSubmit={handleResetPassword}>
@@ -91,7 +100,9 @@ const ResetPasswordPage = () => {
   );
 };
 
+eisi
 // Styles object
+
 const styles = {
   container: {
     position: 'relative',

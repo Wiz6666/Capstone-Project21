@@ -9,7 +9,9 @@ require('dotenv').config();
 
 const { createClient } = require('@supabase/supabase-js');
 const app = express();
-const port = 5001;
+
+const port = 5001; // static local URLs  for backend
+
 app.listen(5001, () => {
     console.log('Server running on http://localhost:5001');
 });
@@ -30,8 +32,11 @@ app.options('/dashboard-data', (req, res) => {
 
 
 // get Supabase setting from the .env
+
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 
@@ -165,6 +170,9 @@ app.get('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+
+
+//collect the data for dashboard
 
 app.get('/dashboard-data', async (req, res) => {
     try {
@@ -301,6 +309,7 @@ app.get('/dashboard-data', async (req, res) => {
 });
 
 
+
 // Get User Profile
 app.get('/profile', verifyToken, async (req, res) => {
     try {
@@ -420,3 +429,4 @@ app.post('/profile/avatar', verifyToken, upload.single('avatar'), async (req, re
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
