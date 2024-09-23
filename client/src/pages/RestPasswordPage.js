@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+
+
 import { supabase } from '../supabaseClient';
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+
+  useEffect(() => {
+    // Get access_token from URL
+    const hashParams = new URLSearchParams(location.hash.slice(1));
+    const accessToken = hashParams.get('access_token');
+
+    if (accessToken) {
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: null,
+      });
+    } else {
+      setError('Invalid reset link');
+    }
+  }, [location]);
+
   const handleResetPassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setError("Passwords don't match");
+      setError("Passwords do not match");
+
       return;
     }
     setIsLoading(true);
@@ -23,7 +44,8 @@ const ResetPasswordPage = () => {
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-      setMessage('Password updated successfully. Redirecting to login...');
+      setMessage('Password updated successfully. Redirecting to login page...');
+
       setTimeout(() => navigate('/login'), 3000);
     } catch (error) {
       setError(error.message);
@@ -35,11 +57,13 @@ const ResetPasswordPage = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>
-        <span>RESET</span><br />
-        <span>PASSWORD</span>
+        <span>Reset</span><br />
+        <span>Password</span>
       </h1>
       <div style={styles.overlay}>
-        <h2 style={styles.subtitle}>ENTER YOUR NEW PASSWORD</h2>
+        <h2 style={styles.subtitle}>Enter your new password</h2>
+
+
         {message && <p style={styles.message}>{message}</p>}
         {error && <p style={styles.error}>{error}</p>}
         <form onSubmit={handleResetPassword}>
@@ -74,6 +98,8 @@ const ResetPasswordPage = () => {
     </div>
   );
 };
+
+// Styles object
 
 const styles = {
   container: {

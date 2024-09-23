@@ -9,7 +9,9 @@ require('dotenv').config();
 
 const { createClient } = require('@supabase/supabase-js');
 const app = express();
+
 const port = 5001; // static local URLs  for backend
+
 app.listen(5001, () => {
     console.log('Server running on http://localhost:5001');
 });
@@ -30,8 +32,11 @@ app.options('/dashboard-data', (req, res) => {
 
 
 // get Supabase setting from the .env
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 
@@ -166,7 +171,9 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
+
 //collect the data for dashboard
+
 app.get('/dashboard-data', async (req, res) => {
     try {
         console.log('Received request at /dashboard-data');
@@ -300,3 +307,126 @@ app.get('/dashboard-data', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
+
+// Get User Profile
+app.get('/profile', verifyToken, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('Users')  
+            .select('username, email, phone_number, role, avatar_url, location, mobile')
+            .eq('user_id', req.userId)
+            .single();  
+
+        if (error) throw error;
+
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json({ message: 'User Profile not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+// Update User Profile
+app.put('/profile', verifyToken, async (req, res) => {
+    try {
+        const { username, email, phone_number, role, avatar_url, location, mobile } = req.body;
+        const { data, error } = await supabase
+            .from('Users')
+            .update({ username, email, phone_number, role, avatar_url, location, mobile })
+            .eq('user_id', req.userId)
+            .single();
+
+        if (error) throw error;
+
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json({ message: 'User Profile not found' });
+        }
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+// Delete User Profile
+app.delete('/profile', verifyToken, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('Users')
+            .delete()
+            .eq('user_id', req.userId)
+            .single();  
+
+        if (error) throw error;
+
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json({ message: 'User Profile not found' });
+        }   
+    } catch (error) {
+        console.error('Error deleting user profile:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}); 
+
+
+
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
+
+// Upload profile image
+app.post('/profile/avatar', verifyToken, upload.single('avatar'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const file = req.file;
+        const userId = req.userId;
+        const fileExt = file.originalname.split('.').pop();
+        const fileName = `${userId}_${Date.now()}.${fileExt}`;
+
+        // Upload file to Supabase storage
+        const { data, error } = await supabase
+            .storage
+            .from('Profile Image')  //Our Supabase bucket name, we store the image in the bucket
+            .upload(fileName, file.buffer, {
+                contentType: file.mimetype,
+            });
+
+        if (error) throw error;
+
+        // Get public URL of the uploaded file
+        const { publicURL, error: urlError } = supabase
+            .storage
+            .from('Profile Image')
+            .getPublicUrl(fileName);
+
+        if (urlError) throw urlError;
+
+        // Update user's avatar_url in the database
+        const { data: userData, error: userError } = await supabase
+            .from('Users')
+            .update({ avatar_url: publicURL })
+            .eq('user_id', userId)
+            .single();
+
+        if (userError) throw userError;
+
+        res.status(200).json({ avatarUrl: publicURL });
+    } catch (error) {
+        console.error('Error uploading avatar:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
