@@ -13,9 +13,7 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
 
   const handleSave = async () => {
     try {
-
       await onUpdate(field, editValue);
-
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating field:', error);
@@ -47,6 +45,7 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
       case 'role': return '👥';
       case 'email': return '✉️';
       case 'phone_number': return '📞';
+      case 'location': return '📍';
       default: return '❓';
     }
   };
@@ -77,13 +76,13 @@ const EditableField = ({ label, value, field, userId, onUpdate }) => {
   );
 };
 
-
 const ProfilePage = () => {
   const [avatar, setAvatar] = useState('/person.png');
   const [name, setName] = useState('Unknown');
   const [role, setRole] = useState('Unknown');
   const [email, setEmail] = useState('Unknown');
   const [phone, setPhone] = useState('Unknown');
+  const [location, setLocation] = useState('Unknown');
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState(null);
 
@@ -92,7 +91,6 @@ const ProfilePage = () => {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [tempAvatar, setTempAvatar] = useState(null);
   const avatarModalRef = useRef(null);
-
 
   useEffect(() => {
     fetchUserProfile();
@@ -120,8 +118,8 @@ const ProfilePage = () => {
           setName(data.username || 'Unknown');
           setRole(data.role || 'Unknown');
           setPhone(data.phone_number || 'Unknown');
+          setLocation(data.location || 'Unknown');
           setAvatar(data.avatar_url || '/person.png');
-
 
           // Check if email is verified and update if necessary
           if (user.email !== data.email || data.email_change_pending) {
@@ -133,7 +131,6 @@ const ProfilePage = () => {
               })
               .eq('user_id', user.id);
           }
-
         }
       }
     } catch (error) {
@@ -198,7 +195,6 @@ const ProfilePage = () => {
     });
   };
 
-
   const updateEmail = async (newEmail) => {
     try {
       // Only update email in Supabase Auth
@@ -222,15 +218,27 @@ const ProfilePage = () => {
   };
 
   const handleFieldUpdate = async (field, value) => {
-    switch (field) {
-      case 'username': setName(value); break;
-      case 'role': setRole(value); break;
-      case 'email': 
-        await updateEmail(value);
-        break;
+    try {
+      const updates = { [field]: value };
 
-      case 'phone_number': setPhone(value); break;
-      default: break;
+      const { error } = await supabase
+        .from('Users')
+        .update(updates)
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      switch (field) {
+        case 'username': setName(value); break;
+        case 'role': setRole(value); break;
+        case 'email': await updateEmail(value); break;
+        case 'phone_number': setPhone(value); break;
+        case 'location': setLocation(value); break;
+        default: break;
+      }
+    } catch (error) {
+      console.error('Error updating field:', error);
+      setError(error.message);
     }
   };
 
@@ -261,6 +269,7 @@ const ProfilePage = () => {
             <EditableField label="ROLE" value={role} field="role" userId={userId} onUpdate={handleFieldUpdate} />
             <EditableField label="EMAIL" value={email} field="email" userId={userId} onUpdate={handleFieldUpdate} />
             <EditableField label="PHONE" value={phone} field="phone_number" userId={userId} onUpdate={handleFieldUpdate} />
+            <EditableField label="LOCATION" value={location} field="location" userId={userId} onUpdate={handleFieldUpdate} />
           </div>
         </div>
       )}
@@ -382,7 +391,6 @@ const styles = {
     marginTop: '5px',
     fontWeight: 'bold',
     cursor: 'pointer',
-    
   },
   editContainer: {
     display: 'flex',
@@ -456,7 +464,6 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
-
   verifiedBadge: {
     backgroundColor: '#4CAF50',
     color: 'white',
@@ -482,4 +489,3 @@ const styles = {
 };
 
 export default ProfilePage;
-
