@@ -17,15 +17,19 @@ const ForgetPasswordPage = () => {
       // Get the base URL of the current page
       const baseUrl = `${window.location.protocol}//${window.location.host}`;
       // Call Supabase API to send password reset email
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${baseUrl}/reset-password`
+      });
 
-
+      if (error) {
+        throw error;
+      }
 
       // Set success message if email is sent successfully
       setMessage('Password reset email sent. Please check your inbox.');
       setError(''); 
     } catch (error) {
       // Set error message if there's an error
-
       setError(error.message);
       setMessage(''); 
     }
