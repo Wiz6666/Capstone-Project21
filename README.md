@@ -14,7 +14,9 @@
 
 ## Overview
 
-This Project Management System is designed to enhance organizational efficiency by providing robust management tools. It facilitates task tracking, collaboration, customizable dashboards, and ensures high security and data privacy. The system supports multiple task views and is built with scalability and extensibility in mind.
+This Project Management System is designed to enhance organizational efficiency for the ASEAN-Australia Strategic Youth Partnership (AASYP). The system includes features for task management, user collaboration, and secure access control. The project was developed by a team of students as part of the CITS5206 Capstone Project at the University of Western Australia.
+The system is built with Node.js for the back-end, Supabase as the database provider, and follows Agile development principles. It offers features like user authentication, profile management, and database integration, with a focus on security and user experience.
+
 
 ## Features
 
