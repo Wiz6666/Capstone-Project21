@@ -1,179 +1,176 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-
-
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
+  // Declare state variables for managing new password, confirm password, messages, and loading state
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-
-  useEffect(() => {
-    // Get access_token from URL
-    const hashParams = new URLSearchParams(location.hash.slice(1));
-    const accessToken = hashParams.get('access_token');
-
-    if (accessToken) {
-      supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: null,
-      });
-    } else {
-      setError('Invalid reset link');
-    }
-  }, [location]);
-
+  // Handle password reset logic when user submits the form
   const handleResetPassword = async (e) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
+    e.preventDefault();  // Prevent default form submission
 
+    // Check if the passwords match before proceeding
+    if (newPassword !== confirmPassword) {
+      setError("Passwords don't match");
       return;
     }
-    setIsLoading(true);
-    setError('');
-    setMessage('');
+
+    setIsLoading(true); // Set loading state to true
+    setError('');       // Clear previous errors
+    setMessage('');     // Clear previous messages
 
     try {
+      // Update user's password via Supabase
       const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) throw error;
-      setMessage('Password updated successfully. Redirecting to login page...');
 
+      // Handle any error during the password update process
+      if (error) throw error;
+
+      // If successful, display message and redirect to login page after a delay
+      setMessage('Password updated successfully. Redirecting to login...');
       setTimeout(() => navigate('/login'), 3000);
     } catch (error) {
+      // If there's an error, display it
       setError(error.message);
     } finally {
+      // End loading state
       setIsLoading(false);
     }
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>
-        <span>Reset</span><br />
-        <span>Password</span>
-      </h1>
-      <div style={styles.overlay}>
-        <h2 style={styles.subtitle}>Enter your new password</h2>
+      <div style={styles.container}>
+        <h1 style={styles.title}>
+          <span>RESET</span><br />
+          <span>PASSWORD</span>
+        </h1>
+        <div style={styles.overlay}>
+          <h2 style={styles.subtitle}>ENTER YOUR NEW PASSWORD</h2>
 
+          {/* Display success or error messages */}
+          {message && <p style={styles.message}>{message}</p>}
+          {error && <p style={styles.error}>{error}</p>}
 
-        {message && <p style={styles.message}>{message}</p>}
-        {error && <p style={styles.error}>{error}</p>}
-        <form onSubmit={handleResetPassword}>
-          <input 
-            type="password" 
-            placeholder="New Password" 
-            className="input-placeholder" 
-            style={styles.input} 
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-          />
-          <input 
-            type="password" 
-            placeholder="Confirm New Password" 
-            className="input-placeholder" 
-            style={styles.input} 
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-          <button 
-            type="submit" 
-            style={styles.button} 
-            disabled={isLoading}
-          >
-            {isLoading ? 'Resetting...' : 'Reset Password'}
-          </button>
-        </form>
-        <Link to="/login" style={styles.backLink}>Back to Login</Link>
+          {/* Form for resetting password */}
+          <form onSubmit={handleResetPassword}>
+            {/* Input for new password */}
+            <input
+                type="password"
+                placeholder="New Password"
+                className="input-placeholder"
+                style={styles.input}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+            />
+            {/* Input for confirming the new password */}
+            <input
+                type="password"
+                placeholder="Confirm New Password"
+                className="input-placeholder"
+                style={styles.input}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+            />
+            {/* Button to submit form and reset password */}
+            <button
+                type="submit"
+                style={styles.button}
+                disabled={isLoading}
+            >
+              {isLoading ? 'Resetting...' : 'Reset Password'}
+            </button>
+          </form>
+
+          {/* Link to navigate back to the login page */}
+          <Link to="/login" style={styles.backLink}>Back to Login</Link>
+        </div>
       </div>
-    </div>
   );
 };
 
-// Styles object
-
+// Styling for the page elements
 const styles = {
   container: {
     position: 'relative',
-    height: '100vh',
+    height: '100vh', // Full viewport height
     width: '100%',
-    background: 'linear-gradient(90deg, #142924 10%, rgba(101, 125, 131, 0.9) 90%)',
+    background: 'linear-gradient(90deg, #142924 10%, rgba(101, 125, 131, 0.9) 90%)', // Gradient background
     display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: 'column', // Column layout for content
+    justifyContent: 'center', // Center content vertically
+    alignItems: 'center', // Center content horizontally
   },
   title: {
     fontSize: '60px',
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#FFFFFF', // White text for contrast
     marginBottom: '60px',
     textAlign: 'center',
-    textTransform: 'uppercase',
-    letterSpacing: '2px',
-    marginTop: '-100px',
+    textTransform: 'uppercase', // All caps text
+    letterSpacing: '2px', // Extra spacing between letters
+    marginTop: '-100px', // Moves title upwards for better positioning
   },
   overlay: {
-    backgroundColor: '#142924',
+    backgroundColor: '#142924', // Dark green background for the form container
     padding: '40px',
-    borderRadius: '20px',
+    borderRadius: '20px', // Rounded corners for smoother design
     textAlign: 'center',
-    maxWidth: '500px',
+    maxWidth: '500px', // Limit the width of the container
     width: '100%',
-    boxShadow: '0px 4px 30px rgba(0, 0, 0, 0.25)',
+    boxShadow: '0px 4px 30px rgba(0, 0, 0, 0.25)', // Adds a subtle shadow effect for depth
   },
   subtitle: {
     fontSize: '30px',
-    color: '#FFFFFF',
-    marginBottom: '50px',
+    color: '#FFFFFF', // White text for visibility
+    marginBottom: '50px', // Adds space below the subtitle
   },
   input: {
     display: 'block',
-    width: '80%', 
-    padding: '15px', 
-    margin: '0 auto 20px auto', 
+    width: '80%', // Input takes up 80% of the container's width
+    padding: '15px',
+    margin: '0 auto 20px auto', // Centers the input and adds space below
     fontSize: '16px',
-    borderRadius: '20px',
-    border: '1px solid #FFFFFF',
-    backgroundColor: 'transparent',
-    color: '#FFFFFF',
+    borderRadius: '20px', // Rounded corners for input fields
+    border: '1px solid #FFFFFF', // White border for visibility
+    backgroundColor: 'transparent', // Transparent background to match theme
+    color: '#FFFFFF', // White input text
     textAlign: 'center',
-    outline: 'none',
+    outline: 'none', // Removes default browser outline on focus
   },
   button: {
     display: 'block',
-    width: '80%',  
+    width: '80%',
     padding: '15px',
     fontSize: '18px',
-    borderRadius: '20px',
-    border: 'none',
-    backgroundColor: '#5A5E63',
-    color: '#FFFFFF',
-    cursor: 'pointer',
-    margin: '0 auto', 
+    borderRadius: '20px', // Rounded button corners
+    border: 'none', // No border
+    backgroundColor: '#5A5E63', // Button background color
+    color: '#FFFFFF', // White button text
+    cursor: 'pointer', // Changes cursor to pointer on hover
+    margin: '0 auto', // Centers the button
   },
   message: {
-    color: '#4CAF50',
+    color: '#4CAF50',  // Green color to indicate a success message
     marginBottom: '20px',
   },
   error: {
-    color: '#F44336',
+    color: '#F44336',  // Red color to indicate an error message
     marginBottom: '20px',
   },
   backLink: {
-    color: '#FFFFFF',
-    textDecoration: 'none',
+    color: '#FFFFFF', // White text for the link
+    textDecoration: 'none', // Removes the default underline from the link
     marginTop: '20px',
-    display: 'inline-block',
+    display: 'inline-block', // Allows the link to behave like a block element while keeping inline formatting
   },
 };
 
