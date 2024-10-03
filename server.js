@@ -266,22 +266,36 @@ app.get('/dashboard-data', async (req, res) => {
         console.log('Due Dates:', durations);
         console.log(' Start Dates:', startDates);
 
-        // Use reduce to calculate each groups' tasks
+        // Use reduce to calculate tasks per group by group_id
         const groupTaskCounts = totalTasksData.reduce((acc, task) => {
-            const groupName = task.group_name || 'Unknown'; // set 'Unknown'
-            if (!acc[groupName]) {
-                acc[groupName] = 0; // initial number
+            const groupId = task.group_id || 'Unknown'; // use group_id and set 'Unknown' for missing IDs
+            if (!acc[groupId]) {
+                acc[groupId] = 0; // initialize the task count for the group
             }
-            acc[groupName] += 1; // add the task number
+            acc[groupId] += 1; // increment the task count for the group
             return acc;
         }, {});
 
-        // Convert groupTaskCounts to an array and return it to the frontend
-        const groupTaskCountsArray = Object.keys(groupTaskCounts).map(groupName => ({
-            groupName,
-            taskCount: groupTaskCounts[groupName]
+        // Link the group_id to the name from the groups table
+        const groupNames = {
+            1: 'Executive',
+            2: 'Community and Culture',
+            3: 'Marketing and Communications',
+            4: 'Finance',
+            5: 'Operations',
+            6: 'Partnerships',
+            13: 'Technology',
+            // add any other group ids and names here
+        };
+
+        // Convert groupTaskCounts to an array, including the group name
+        const groupTaskCountsArray = Object.keys(groupTaskCounts).map(groupId => ({
+            groupName: groupNames[groupId] || 'Unknown', // fetch the name from the groupNames mapping
+            taskCount: groupTaskCounts[groupId]
         }));
+
         console.log('group:', groupTaskCountsArray);
+
 
 
         // return data to the front end
@@ -314,10 +328,10 @@ app.get('/dashboard-data', async (req, res) => {
 app.get('/profile', verifyToken, async (req, res) => {
     try {
         const { data, error } = await supabase
-            .from('Users')  
+            .from('Users')
             .select('username, email, phone_number, role, avatar_url, location, mobile')
             .eq('user_id', req.userId)
-            .single();  
+            .single();
 
         if (error) throw error;
 
@@ -364,7 +378,7 @@ app.delete('/profile', verifyToken, async (req, res) => {
             .from('Users')
             .delete()
             .eq('user_id', req.userId)
-            .single();  
+            .single();
 
         if (error) throw error;
 
@@ -372,12 +386,12 @@ app.delete('/profile', verifyToken, async (req, res) => {
             res.status(200).json(data);
         } else {
             res.status(404).json({ message: 'User Profile not found' });
-        }   
+        }
     } catch (error) {
         console.error('Error deleting user profile:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-}); 
+});
 
 
 
