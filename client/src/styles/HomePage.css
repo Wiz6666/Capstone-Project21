@@ -1,0 +1,152 @@
+/* General layout settings */
+.container {
+  height: 300vh; /* Each page will take up the full viewport height */
+}
+
+.page {
+  position: relative;
+  height: 100vh; /* Each page section will occupy full viewport height */
+  width:100%;
+  display: flex;
+  justify-content: center; /* Centers content horizontally */
+  align-items: center; /* Centers content vertically */
+}
+
+.fullHeightSection {
+  width: 100%;/* Takes full width of the container */
+  height: 100%; /* Takes full height of the container */
+  position: relative;
+}
+
+.video-background {
+  position:absolute; /* Allows the video to be placed behind content */
+  top: 0;
+  left: 0;
+  width: 100%; /* Makes the video cover the entire width of the viewport */
+  height: 100%; /* Makes the video cover the entire height of the viewport */
+  object-fit: cover; /* Ensures the video fills the container without distortion */
+  z-index: -1; /* Puts the video behind other elements */
+}
+.textContainer {
+  position: absolute;
+  top: 50%; /* Positions the content in the center vertically */
+  left: 50%; /* Positions the content in the center horizontally */
+  transform: translate(-50%, -50%); /* Corrects the center positioning */
+  text-align: center; /* Centers the text */
+  color: #048492; /* Text color is white */
+}
+
+.title {
+  font-size: 48px; /* Large font size for the title */
+  font-weight: bold; /* Makes the title bold */
+  margin-bottom: 120px; /* Adds space below the title */
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: center; /* Centers the buttons */
+  gap: 20px; /* Adds space between the buttons */
+  padding-top: 20px; /* Adds space above the buttons */
+}
+
+.button {
+  padding: 10px 20px; /* Adds padding inside the button */
+  font-size: 18px; /* Font size for the button text */
+  font-weight: bold;
+  color: #FFFFFF; /* Button text color is white */
+  background-color: #048492; /* Dark green background for the button */
+  border: none; /* No border for the button */
+  border-radius: 5px; /* Rounded corners for the button */
+  cursor: pointer; /* Changes cursor to a pointer when hovering over the button */
+}
+
+/* Specific content container for second page */
+.contentContainer {
+  position:absolute;
+  display:flex;
+  justify-content: space-between; /* Spaces out the content evenly */
+  align-items: center; /* Aligns content vertically in the center */
+  width: 100%; /* Full width of the container */
+  padding: 20px 40px; /* Adds padding around the content */
+  box-sizing: border-box; /* Includes padding in the element's total width and height */
+}
+
+/* Information section for second page */
+.infoSection {
+  flex: 1; /* Takes up equal space with the videoContainer */
+  padding-right: 20px; /* Adds space between text and video */
+  color: #048492; /* Text color is white */
+  text-align: left; /* Left-aligns the text */
+  margin-top: 150px; /* Adds space at the top */
+}
+
+.description {
+  font-size: 18px; /* Font size for the description text */
+  font-weight: bold; /* Makes the description bold */
+  line-height: 1.6; /* Sets the line height for better readability */
+  text-align: center; /* Centers the description text */
+}
+
+/* Video container for second page */
+.videoContainer {
+  flex: 1; /* Takes up equal space with the infoSection */
+  display: flex;
+  justify-content: center; /* Centers the video */
+  margin-top: 225px; /* Adds space at the top */
+}
+
+.videoSmall {
+  max-width: 100%; /* Makes the video responsive */
+  width: 600px; /* Sets a specific width for the video */
+  border-radius: 10px; /* Adds rounded corners to the video */
+}
+
+/* Contact section (for the third page) */
+.content {
+  color: #048492; /* Text color is white */
+  font-weight: bold;
+  text-align: left; /* Left-aligns the text */
+  max-width: 600px; /* Limits the width of the content */
+}
+
+.info {
+  font-size: 18px; /* Font size for the contact information */
+  line-height: 1.5; /* Line height for readability */
+}
+
+.label {
+  font-size: 24px; /* Larger font size for labels like "PHONE", "EMAIL" */
+  font-weight: bold; /* Bold text for the labels */
+  margin-top: 20px; /* Adds space above the label */
+}
+
+.value {
+  margin-bottom: 20px; /* Adds space below the value */
+}
+
+.socialIcons {
+  display: flex;
+  justify-content: left; /* Aligns the social icons to the left */
+  margin-top: 10px; /* Adds space above the icons */
+}
+
+.icon {
+  margin-right: 20px; /* Adds space between each social icon */
+  display: inline-block; /* Makes each icon behave like an inline-block */
+}
+
+.social-icon-img {
+  width: 40px; /* 图标宽度 */
+  height: auto; /* 高度自动调整以保持宽高比 */
+  fill: white; /* 如果是 SVG 图标，将颜色设置为白色 */
+  background-color: #048492; /* 绿色背景 */
+  padding: 10px; /* 添加内边距，使图标与背景有距离 */
+  border-radius: 50%; /* 使背景变为圆形，如果不需要圆形可以移除 */
+  transition: transform 0.3s ease, background-color 0.3s ease; /* 添加悬停效果 */
+}
+
+/* 悬停效果，可以调整背景颜色或放大图标 */
+.social-icon-img:hover {
+  transform: scale(1.1); /* 悬停时图标放大 */
+  background-color: #048492; /* 悬停时绿色背景加深 */
+}

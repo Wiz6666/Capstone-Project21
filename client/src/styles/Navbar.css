@@ -1,0 +1,36 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  background-color: #0b8493 !important; /* 使用 !important 强制应用这个背景色 */
+  padding: 10px 20px;
+}
+  .navbar-logo img {
+    width: 90px; 
+  }
+  
+  .navbar-menu {
+    list-style: none;
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-end;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar-menu li {
+    margin: 0 20px;
+  }
+  
+  .navbar-menu li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+  }
+
+  .navbar-login a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+  }
+
+  
