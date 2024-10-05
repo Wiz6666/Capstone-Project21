@@ -3,27 +3,43 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');  // Import the CORS package
-const db = require('./db');
-const path = require('path');
-require('dotenv').config();
-
-const { createClient } = require('@supabase/supabase-js');
 const app = express();
 
-const port = 5001; // static local URLs  for backend
 
-app.listen(5001, () => {
-    console.log('Server running on http://localhost:5001');
-});
+const path = require('path');
+require('dotenv').config();
+app.use(bodyParser.json());  // use bodyParser 
 
+const { createClient } = require('@supabase/supabase-js');
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Supabase URL and Key are required.');
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+
+// Set the port dynamically or default to 5001 for local development
+const port = process.env.PORT || 5001;
+
+
+// Set the origin dynamically, based on an environment variable or fallback to localhost:3000
+const allowedOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:3000';
+
+
+// Set up CORS
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: allowedOrigin,
     methods: 'GET, POST, OPTIONS',
     allowedHeaders: 'Content-Type',
 }));
-// deal with OPTIONS request
+
+// Handle OPTIONS request for CORS preflight
 app.options('/dashboard-data', (req, res) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Origin', allowedOrigin);
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.sendStatus(200);
@@ -31,23 +47,14 @@ app.options('/dashboard-data', (req, res) => {
 
 
 
-// get Supabase setting from the .env
-
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-
 
 // Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve the index.html file from its location outside the public directory
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+//app.get('/', (req, res) => {
+//res.sendFile(path.join(__dirname, 'index.html'));
+//});
 
 
 app.use((req, res, next) => {
@@ -56,7 +63,7 @@ app.use((req, res, next) => {
     next();
 });
 // Serve the static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+//app.use(express.static(path.join(__dirname, 'client/build')));
 
 const SECRET_KEY = 'your_jwt_secret_key';
 
@@ -165,11 +172,10 @@ app.delete('/tasks/:id', verifyToken, (req, res) => {
 });
 
 // Handles any requests that don't match the ones above
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname + '/client/build/index.html'));
-});
+//app.get('*', (req, res) => {
+//res.sendFile(path.join(__dirname + '/client/build/index.html'));
+//});
 
-const PORT = process.env.PORT || 5000;
 
 
 //collect the data for dashboard
@@ -191,11 +197,12 @@ app.get('/dashboard-data', async (req, res) => {
         // calculate the total tasks
         const totalTasks = totalTasksData.length;
 
+
         // Get "To Do" status tasks
         const { data: toDoTasksData, error: toDoTasksError } = await supabase
             .from('tasks')
             .select('*')
-            .eq('task_status', 'To do');
+            .eq('task_status', 'Not Started');
 
         if (toDoTasksError) {
             console.error('Error fetching To Do tasks:', toDoTasksError);
@@ -203,11 +210,12 @@ app.get('/dashboard-data', async (req, res) => {
         }
         const toDoTasks = toDoTasksData.length;
 
+
         // Get "In Progress" status tasks
         const { data: inProgressTasksData, error: inProgressTasksError } = await supabase
             .from('tasks')
             .select('*')
-            .eq('task_status', 'In progress');
+            .eq('task_status', 'In Progress');
 
         if (inProgressTasksError) {
             console.error('Error fetching In Progress tasks:', inProgressTasksError);
@@ -215,17 +223,19 @@ app.get('/dashboard-data', async (req, res) => {
         }
         const inProgressTasks = inProgressTasksData.length;
 
+
         // Get "Completed" status tasks
         const { data: completedTasksData, error: completedTasksError } = await supabase
             .from('tasks')
             .select('*')
-            .eq('task_status', 'completed');
+            .eq('task_status', 'Completed');
 
         if (completedTasksError) {
             console.error('Error fetching Completed tasks:', completedTasksError);
             return res.status(500).json({ error: 'Error fetching Completed tasks' });
         }
         const completedTasks = completedTasksData.length;
+        console.log('completedTasks:', completedTasks);
 
         // calculate the priority rate
         let highPriority = 0;
@@ -256,15 +266,18 @@ app.get('/dashboard-data', async (req, res) => {
         // Use map to generate the arrays
         const startDates = totalTasksData.map(task => task.start_date);
         const dueDates = totalTasksData.map(task => task.due_date);
-        const statuses = totalTasksData.map(task => task.task_status);
+        const taskname_duration = totalTasksData.map(task => task.task_name);
         const durations = totalTasksData.map(task => {
             const startDate = new Date(task.start_date);
             const dueDate = new Date(task.due_date);
             const duration = (dueDate - startDate) / (1000 * 60 * 60 * 24); // Measured in days
             return parseFloat(duration.toFixed(1)) > 0 ? parseFloat(duration.toFixed(1)) : 0; // one decimal place and avoid negative values
         });
-        console.log('Due Dates:', durations);
+        console.log('Durations:', durations);
         console.log(' Start Dates:', startDates);
+        console.log(' Due Dates:', dueDates);
+        console.log(' Taskname for duration:', taskname_duration);
+
 
         // Use reduce to calculate tasks per group by group_id
         const groupTaskCounts = totalTasksData.reduce((acc, task) => {
@@ -310,7 +323,7 @@ app.get('/dashboard-data', async (req, res) => {
             taskCompletionRate,
             startDates,
             dueDates,
-            statuses,
+            taskname_duration,// add the taskname for duration display
             durations,
             groupTaskCounts: groupTaskCountsArray
         });
@@ -322,7 +335,9 @@ app.get('/dashboard-data', async (req, res) => {
     }
 });
 
-
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+});
 
 // Get User Profile
 app.get('/profile', verifyToken, async (req, res) => {
