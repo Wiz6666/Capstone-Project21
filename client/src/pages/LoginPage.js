@@ -136,21 +136,13 @@ const styles = {
     transform: 'translate(-50%, -50%)', // Centers the video within the container
     zIndex: '-1', // Places the video behind other elements
   },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay to improve text readability on top of the video
-  },
   textContainer: {
     position: 'absolute',
     top: '45%',
     left: '15%',
     transform: 'translate(-50%, -50%)', // Centers the text container within the page
     textAlign: 'left',
-    color: '#FFFFFF', // White text for contrast against the dark overlay
+    color: '#048492', // White text for contrast against the dark overlay
     width: '100%',
     maxWidth: '400px', // Limits the width of the text container to improve readability
   },
@@ -168,6 +160,7 @@ const styles = {
     lineHeight: '1.4',  // Increases line spacing for better readability
     maxWidth: '400px',
     textAlign: 'left',
+    fontWeight: 'bold',
   },
   signIn: {
     fontSize: '40px',
@@ -186,7 +179,8 @@ const styles = {
     padding: '15px',
     fontSize: '16px',
     color: '#FFFFFF', // Ensures the input text is visible on dark background
-    backgroundColor: '#2E4A29', // Dark background for input fields
+    backgroundColor:'#048492', // Dark background for input fields
+    
     border: 'none',
     borderRadius: '20px', // Adds rounded corners to the input fields
     textAlign: 'center',
@@ -200,7 +194,7 @@ const styles = {
     padding: '15px 20px',
     fontSize: '18px',
     color: '#FFFFFF',
-    backgroundColor: '#2E4A29',  // Button background color matches input fields
+    backgroundColor: '#048492',  // Button background color matches input fields
     border: 'none',
     borderRadius: '20px', // Rounded corners for the button
     cursor: 'pointer',
@@ -210,9 +204,10 @@ const styles = {
   forgotPasswordButton: {
     padding: '10px 10px',
     fontSize: '16px',
-    color: '#FFFFFF',
+    color: '#048492',
+    fontWeight: 'bold',
     backgroundColor: 'transparent',  // Transparent background to distinguish from other buttons
-    border: '1px solid #FFFFFF',  // White border for visibility
+    border: '2px solid #048492',  // White border for visibility
     borderRadius: '20px',
     cursor: 'pointer',
     width: '45%',
@@ -222,9 +217,10 @@ const styles = {
   noAccountButton: {
     padding: '10px 10px',
     fontSize: '16px',
-    color: '#FFFFFF',
+    color: '#048492',
+    fontWeight: 'bold',
     backgroundColor: 'transparent',
-    border: '1px solid #FFFFFF',
+    border: '2px solid #048492',
     borderRadius: '20px',
     cursor: 'pointer',
     width: '45%',

@@ -103,7 +103,7 @@ const styles = {
     position: 'relative',
     height: '100vh', // Full viewport height
     width: '100%',
-    background: 'linear-gradient(90deg, #142924 10%, rgba(101, 125, 131, 0.9) 90%)', // Gradient background
+    background: 'linear-gradient(to bottom, #a0c7c9, #f6d68b)', // Updated gradient background
     display: 'flex',
     flexDirection: 'column', // Column layout for content
     justifyContent: 'center', // Center content vertically
@@ -112,7 +112,7 @@ const styles = {
   title: {
     fontSize: '60px',
     fontWeight: 'bold',
-    color: '#FFFFFF', // White text for contrast
+    color: '#048492', // White text for contrast
     marginBottom: '60px',
     textAlign: 'center',
     textTransform: 'uppercase', // All caps text
@@ -120,7 +120,7 @@ const styles = {
     marginTop: '-100px', // Moves title upwards for better positioning
   },
   overlay: {
-    backgroundColor: '#142924', // Dark green background for the form container
+    backgroundColor: '#F7AB3B', // Updated to orange color
     padding: '40px',
     borderRadius: '20px', // Rounded corners for smoother design
     textAlign: 'center',
@@ -139,8 +139,9 @@ const styles = {
     padding: '15px',
     margin: '0 auto 20px auto', // Centers the input and adds space below
     fontSize: '16px',
+    fontWeight: 'bold',
     borderRadius: '20px', // Rounded corners for input fields
-    border: '1px solid #FFFFFF', // White border for visibility
+    border: '2px solid #FFFFFF', // White border for visibility
     backgroundColor: 'transparent', // Transparent background to match theme
     color: '#FFFFFF', // White input text
     textAlign: 'center',
@@ -153,7 +154,8 @@ const styles = {
     fontSize: '18px',
     borderRadius: '20px', // Rounded button corners
     border: 'none', // No border
-    backgroundColor: '#5A5E63', // Button background color
+    fontWeight: 'bold',
+    backgroundColor: '#048492', // Button background color
     color: '#FFFFFF', // White button text
     cursor: 'pointer', // Changes cursor to pointer on hover
     margin: '0 auto', // Centers the button
@@ -170,6 +172,7 @@ const styles = {
     color: '#FFFFFF', // White text for the link
     textDecoration: 'none', // Removes the default underline from the link
     marginTop: '20px',
+    fontWeight: 'bold',
     display: 'inline-block', // Allows the link to behave like a block element while keeping inline formatting
   },
 };

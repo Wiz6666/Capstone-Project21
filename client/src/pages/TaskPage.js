@@ -6,12 +6,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button, Form } from 'react-bootstrap';
 import debounce from 'lodash.debounce';
 
+
 // Initialize Supabase client
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TaskList = () => {
+    const [users, setUsers] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
     const [tasks, setTasks] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showModal, setShowModal] = useState(false);
@@ -28,6 +31,11 @@ const TaskList = () => {
       });
     const openFilterModal = () => setShowFilterModal(true);
     const closeFilterModal = () => setShowFilterModal(false);
+    const [showGroupModal, setShowGroupModal] = useState(false);
+    const [groups, setGroups] = useState([]);
+    const [newGroupName, setNewGroupName] = useState('');
+    const openGroupModal = () => setShowGroupModal(true);
+    const closeGroupModal = () => setShowGroupModal(false);
     const [showSortWindow, setShowSortWindow] = useState(false);
     const [newTask, setNewTask] = useState({
         task_name: '',
@@ -37,7 +45,9 @@ const TaskList = () => {
         due_date: '',
         task_status: '',
         priority: '',
-        group_name: ''
+        group_id: '',
+        assignees: [],
+        new_group_name: ''
     });
     const [editingTaskId, setEditingTaskId] = useState(null);
     const [editedTask, setEditedTask] = useState({});
@@ -51,15 +61,59 @@ const TaskList = () => {
         { name: 'Due Date', field: 'due_date' },
         { name: 'Description', field: 'task_description' },
         { name: 'Owner', field: 'owner_id' },
+        { name: 'Assignees', field: 'assignees' },
         { name: 'Status', field: 'task_status' },
         { name: 'Priority', field: 'priority' },
         { name: 'Group', field: 'group_name' }
     ]);
+        
+    useEffect(() => {
+        const fetchGroups = async () => {
+            const { data, error } = await supabase
+                .from('groups')
+                .select('*'); // Fetch all groups
+
+            if (error) {
+                console.error('Error fetching groups:', error);
+            } else {
+                setGroups(data); // Update state with fetched groups
+            }
+        };
+
+        fetchGroups(); // Call the fetch function on component mount
+    }, []);
+
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (error) {
+                console.error('Error fetching user:', error);
+            } else {
+                setCurrentUser(user);
+            }
+        };
+    
+        fetchCurrentUser();
+    }, []);    
+
+    const fetchUsers = async () => {
+        const { data: usersData, error } = await supabase.from('Users').select('user_id, username');
+        if (error) {
+          console.error('Error fetching users:', error);
+        } else {
+          setUsers(usersData);
+          console.log(usersData);
+        }
+      };
+
+    useEffect(() => {
+        fetchUsers();
+      }, []);
 
     const fetchTasks = async (query = '') => {
         const { data, error } = await supabase
             .from('tasks')
-            .select('*')
+            .select('*, Users:owner_id (username), groups (name)')
             .or(`task_name.ilike.%${query}%,task_description.ilike.%${query}%`)
             .order(sortColumn, { ascending: sortOrder === 'asc' });
     
@@ -81,10 +135,10 @@ const TaskList = () => {
     useEffect(() => {
         fetchTasks();
     }, []);
-
+    
     useEffect(() => {
         debouncedFetchTasks(searchQuery);
-    }, [searchQuery, sortColumn, sortOrder]);
+    }, [searchQuery, sortColumn, sortOrder]); 
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
@@ -105,49 +159,252 @@ const TaskList = () => {
     const handleFieldClick = (taskId, field) => {
         setEditingTaskId(taskId);    // Track the task being edited
         setEditingField(field);      // Track the field being edited
-        setEditedTask(tasks.find((task) => task.id === taskId)); // Set the initial task data
+        const taskToEdit = tasks.find((task) => task.id === taskId);
+        setEditedTask({
+            ...taskToEdit,
+            assignees: Array.isArray(taskToEdit.assignees) ? taskToEdit.assignees : [],  // Keep existing array or initialize to empty
+        });
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if (editingTaskId) {
-            setEditedTask((prevTask) => ({
-                ...prevTask,
-                [name]: value,
-            }));
+            
+        // Check if we're editing the group field
+        if (name === "group_id") {
+            if (value === "create_new") {
+                setNewTask((prevTask) => ({
+                    ...prevTask,
+                    group_id: value, // Set the group_id to 'create_new'
+                    new_group_name: '', // Reset new_group_name
+                }));
+            } 
+            else if (editingTaskId) {
+                console.log("Selected existing group");
+                setEditedTask((prevTask) => ({
+                    ...prevTask,
+                    group_id: value,  // Set the group_id to the selected value
+                }));
+            }
+            else {
+                setNewTask((prevTask) => ({
+                    ...prevTask,
+                    group_id: value,  // Set the group_id to the selected value
+                }));
+            }
+        } 
+        else if (name === "assignees") {
+            const selectedAssignees = Array.from(e.target.selectedOptions, option => option.value);
+            if (editingTaskId){
+                console.log('Selected assignees:', selectedAssignees);
+                setEditedTask((prevTask) => ({
+                    ...prevTask,
+                    assignees: selectedAssignees, // Store the selected assignees
+                }));
+            }
+            else {
+                setNewTask((prevTask) => ({
+                    ...prevTask,
+                    assignees: selectedAssignees, // Store the selected assignees
+                }));
+            }
         } else {
-            setNewTask((prevTask) => ({
-                ...prevTask,
-                [name]: value,
-            }));
+            // Handle other input fields (single values)
+            if (editingTaskId) {
+                setEditedTask((prevTask) => ({
+                    ...prevTask,
+                    [name]: value,
+                }));
+            } else {
+                setNewTask((prevTask) => ({
+                    ...prevTask,
+                    [name]: value,
+                }));
+            }
+        }
+    };          
+    
+    useEffect(() => {
+        console.log('Edited task state updated:', editedTask);
+    }, [editedTask]);
+
+    const handleCreateGroup = async () => {
+        if (!currentUser) {
+            console.error('User is not authenticated.');
+            return;
+        }
+    
+        // Log to verify currentUser
+        console.log('Current User ID:', currentUser.id);
+
+        const { data: userData, error: userError } = await supabase
+            .from('Users')
+            .select('role') // Fetch the user's role
+            .eq('user_id', currentUser.id) // Replace with your logic to get the current username
+            .single();
+    
+        if (userError) {
+            console.error('Error fetching user role:', userError);
+            return;
+        }
+    
+        const userRole = userData?.role;
+    
+        // Check if the user is an admin
+        if (userRole !== 'Admin') {
+            alert('You do not have permission to create a new group.');
+            return; // Stop execution if not admin
+        }
+    
+        // Proceed with group creation
+        const { data: groupData, error: groupError } = await supabase
+            .from('groups')
+            .insert([{ name: newGroupName }])
+            .select('id, name') // Select both id and name for the new group
+            .single();
+    
+        if (groupError) {
+            console.error('Error creating new group:', groupError);
+            return;
+        }
+    
+        // Update the groups state to include the newly created group
+        setGroups((prevGroups) => [
+            ...prevGroups,
+            { id: groupData.id, name: newGroupName }, // Add the new group to the state
+        ]);
+    
+        // Reset the new group name input field
+        setNewGroupName('');
+    };        
+    
+    // Remove an existing group
+    const handleRemoveGroup = async (groupId) => {
+        if (!currentUser) {
+            console.error('User is not authenticated.');
+            return;
+        }
+    
+        // Log to verify currentUser
+        console.log('Current User ID:', currentUser.id);
+
+        const { data: userData, error: userError } = await supabase
+            .from('Users')
+            .select('role') // Fetch the user's role
+            .eq('user_id', currentUser.id) // Replace with your logic to get the current username
+            .single();
+    
+        if (userError) {
+            console.error('Error fetching user role:', userError);
+            return;
+        }
+    
+        const userRole = userData?.role;
+    
+        // Check if the user is an admin
+        if (userRole !== 'Admin') {
+            alert('You do not have permission to remove a group.');
+            return; // Stop execution if not admin
+        }
+
+        try {
+            const { error } = await supabase
+                .from('groups')
+                .delete()
+                .eq('id', groupId);
+
+            if (error) {
+                console.error('Error removing group:', error);
+                return;
+            }
+
+            setGroups(prevGroups => prevGroups.filter(group => group.id !== groupId));
+        } catch (err) {
+            console.error('Error while removing group:', err);
         }
     };
-
+        
     const handleNewTaskSubmit = async (e) => {
         e.preventDefault();
-
-        const { task_name, task_description, owner_id, start_date, due_date, task_status, priority, group_name } = newTask;
-
-        // Insert new task into Supabase database
-        const { data, error } = await supabase
-            .from('tasks')
-            .insert([
-                { task_name, task_description, owner_id, start_date, due_date, task_status, priority, group_name },
-            ]);
-
-        if (error) {
-            console.error('Error adding new task:', error);
-        } 
-        else {
-            if (Array.isArray(data)) {
-                setTasks(prevTasks => [...prevTasks, ...data]);
-            } else {
-                console.error('Expected data to be an array, but got:', data);
+    
+        const { task_name, task_description, owner_id, assignees, start_date, due_date, task_status, priority, group_name } = newTask;
+    
+        try {
+            let groupId = null; // Variable to hold the group_id
+    
+            // Check if the group exists or needs to be created
+            if (group_name && !['Executive', 'Community and Culture', 'Marketing and Communications', 'Finance', 'Operations', 'Partnerships', 'Technology'].includes(group_name)) {
+                // If it's a custom group, insert it into the 'groups' table
+                const { data: groupData, error: groupError } = await supabase
+                    .from('groups')
+                    .insert([{ name: group_name }]) // Insert the custom group
+                    .select('id') // Fetch the group_id after insertion
+                    .single();
+    
+                if (groupError) {
+                    console.error('Error creating new group:', groupError);
+                    return;
+                }
+    
+                groupId = groupData?.id; // Set the group_id from the newly created group
+            } else if (group_name) {
+                // If it's a predefined group, fetch its group_id from the 'groups' table
+                const { data: existingGroup, error: fetchGroupError } = await supabase
+                    .from('groups')
+                    .select('id')
+                    .eq('name', group_name)
+                    .single();
+    
+                if (fetchGroupError) {
+                    console.error('Error fetching existing group:', fetchGroupError);
+                    return;
+                }
+    
+                groupId = existingGroup?.id; // Set the group_id from the fetched group
             }
-            fetchTasks();
-            closeModal();
+    
+            // Fetch the owner_id (UUID) based on the username
+            const { data: userData, error: userError } = await supabase
+                .from('Users')
+                .select('user_id') // Assuming 'user_id' is the column for UUID in the Users table
+                .eq('username', owner_id) // 'owner_id' here refers to the username
+                .single(); // We expect only one user per username
+    
+            if (userError) {
+                console.error('Error fetching user ID:', userError);
+                return;
+            }
+    
+            const actualOwnerId = userData?.user_id;
+    
+            if (!actualOwnerId) {
+                console.error('No matching user found for the provided username.');
+                return;
+            }
+            
+            // Insert new task into the 'tasks' table with the actual owner_id (UUID) and group_id
+            const { data, error } = await supabase
+                .from('tasks')
+                .insert([
+                    { task_name, task_description, owner_id: actualOwnerId, assignees, start_date, due_date, task_status, priority, group_id: groupId },
+                ]);
+    
+            if (error) {
+                console.error('Error adding new task:', error);
+            } else {
+                if (Array.isArray(data)) {
+                    console.log('New task added:', data);
+                    setTasks(prevTasks => [...prevTasks, ...data]);
+                } else {
+                    console.error('Expected data to be an array, but got:', data);
+                }
+    
+                await fetchTasks();
+                closeModal();
+            }
+        } catch (err) {
+            console.error('Error while adding new task:', err);
         }
-    };
+    };            
 
     const handleDeleteTask = async (id) => {
         if (selectedTaskIds.length === 0) {
@@ -191,26 +448,68 @@ const TaskList = () => {
         });
     };
 
-    const handleBlur = async (taskId) => {
+    const handleBlur = async (taskId, fieldName) => {
         try {
-            const { error } = await supabase.from('tasks').update(editedTask).eq('id', taskId);
+            // Create a shallow copy of editedTask
+            const validEditedTask = { ...editedTask };
+
+            console.log('Assignees after update:', validEditedTask);
+    
+            // Clean unnecessary fields like Users and groups
+            delete validEditedTask.Users;
+            delete validEditedTask.groups;
+    
+            // Additional validation for specific fields if necessary
+            if (fieldName === 'owner_id' && !editedTask.owner_id) {
+                console.error('Invalid owner_id:', editedTask.owner_id);
+                return;
+            }
+    
+            if (fieldName === 'group_id' && !editedTask.group_id) {
+                console.error('Invalid group_id:', editedTask.group_id);
+                return;
+            }
+
+            // Check for assignees validity
+            if (fieldName === 'assignees') {
+                // Assuming assignees should not be null or empty
+                if (!Array.isArray(validEditedTask.assignees) || editedTask.assignees.length === 0) {
+                    console.error('Invalid assignees:', editedTask.assignees);
+                    return;
+                }
+            }
+
+            // Perform the update for the task
+            const { error } = await supabase
+                .from('tasks')
+                .update(validEditedTask) // Update all fields at once
+                .eq('id', taskId);
+    
             if (error) {
                 console.error('Error updating task:', error);
                 return;
             }
+
+            // Optimistically update the local state with the new changes
             setTasks((prevTasks) =>
-                prevTasks.map((task) => (task.id === taskId ? { ...task, ...editedTask } : task))
+                prevTasks.map((task) =>
+                    task.id === taskId ? { ...task, ...validEditedTask } : task
+                )
             );
-            setEditingTaskId(null);    // Exit editing mode
+
+            await fetchTasks();
+
+            // Exit the editing mode
+            setEditingTaskId(null);
             setEditingField(null);
         } catch (err) {
-            console.error('Error:', err);
+            console.error('Error updating task:', err);
         }
-    };
+    };    
 
     const applyFilters = async () => {
         try {
-          let query = supabase.from('tasks').select('*');
+          let query = supabase.from('tasks').select('*, Users:owner_id (username), groups (name)');
       
           // Apply task_name filter
           if (filters.task_name) {
@@ -264,374 +563,491 @@ const TaskList = () => {
         } catch (error) {
           console.error('Error applying filters:', error.message);
         }
-      };
+    };
 
     return (
-        <div className="task-list">
-            <div className="task-list-header">
-                <h1>TASK LIST</h1>
-                <form onSubmit={handleSearchSubmit} className="search-form">
-                    <input
-                        type="text"
-                        placeholder="Search tasks..."
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        className="search-input"
-                    />
-                </form>
-                <button className="new-task-button" onClick={openModal}>NEW TASK +</button>
-                <Button variant="danger" className="delete-task-button" onClick={handleDeleteTask}>DELETE TASK</Button>
-                <div className="task-list-actions">
-                    <button className="filter-button" onClick={openFilterModal}>🔍 Filter</button>
-                    <button className="sort-button" onClick={() => setShowSortWindow(!showSortWindow)}>🔄 Sort</button>
-                    <button className="group-button">🔍 Group by</button>
-                </div>
-                <Modal show={showFilterModal} onHide={closeFilterModal}>
-                  <Modal.Header closeButton>
-                    <Modal.Title>Filter Tasks</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                  <Form.Group>
-                      <Form.Label>Task Status</Form.Label>
-                      <Form.Select name="task_status" value={filters.task_status} onChange={handleFilterChange}>
-                        <option value="Not started">Not Started</option>
-                        <option value="In progress">In Progress</option>
-                        <option value="On hold">On Hold</option>
-                        <option value="Completed">Completed</option>
-                        <option value="">All</option>
-                      </Form.Select>
-                    </Form.Group>
-                    <br />
-
-                    <Form.Group>
-                      <Form.Label>Priority</Form.Label>
-                      <Form.Select name="priority" value={filters.priority} onChange={handleFilterChange}>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        <option value="">All</option>
-                      </Form.Select>
-                    </Form.Group>
-                    <br />
-
-                    <Form.Group>
-                      <Form.Label>Group</Form.Label>
-                      <Form.Select name="group_name" value={filters.group_name} onChange={handleFilterChange}>
-                        <option value="Finance Department">Finance Department</option>
-                        <option value="IT Department">IT Department</option>
-                        <option value="HR Department">HR Department</option>
-                        <option value="">All</option>
-                      </Form.Select>
-                    </Form.Group>
-
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <Button variant="secondary" onClick={closeFilterModal}>
-                      Close
-                    </Button>
-                    <Button variant="primary" onClick={() => { closeFilterModal(); applyFilters(); }}>
-                      Apply Filters
-                    </Button>
-                  </Modal.Footer>
-                </Modal>
-                {showSortWindow && (
-                    <div className="sort-window">
-                        <h4>Sort Tasks</h4>
-                        <label>
-                            Field:
-                            <select
-                                value={sortColumn}
-                                onChange={(e) => setSortColumn(e.target.value)}
-                                style={{ marginLeft: '5px' }}
-                            >
-                                {availableFields.map((field) => (
-                                    <option key={field.field} value={field.field}>
-                                        {field.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-                        <label style={{ marginLeft: '15px' }}>
-                            Order:
-                            <select
-                                value={sortOrder}
-                                onChange={(e) => setSortOrder(e.target.value)}
-                                style={{ marginLeft: '5px' }}
-                            >
-                                <option value="asc">Ascending</option>
-                                <option value="desc">Descending</option>
-                            </select>
-                        </label>
+        <div className="task-list-page">
+            <div className="task-list">
+                <div className="task-list-header">
+                    <h1>PROJECT LIST</h1>
+                    <form onSubmit={handleSearchSubmit} className="search-form">
+                        <input
+                            type="text"
+                            placeholder="Search projects..."
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            className="search-input"
+                        />
+                    </form>
+                    <button className="new-task-button" onClick={openModal}>NEW PROJECT +</button>
+                    <Button variant="danger" className="delete-task-button" onClick={handleDeleteTask}>DELETE PROJECT</Button>
+                    <div className="task-list-actions">
+                        <button className="filter-button" onClick={openFilterModal}>🔍 Filter</button>
+                        <button className="sort-button" onClick={() => setShowSortWindow(!showSortWindow)}>🔄 Sort</button>
+                        <button className="group-button">🔍 Group by</button>
                     </div>
-                )}
-            </div>
-            <table className="task-table">
-                <thead>
-                    <tr>
-                        <th>Select</th>
-                        <th>No</th>
-                        <th>Task</th>
-                        <th>Description</th>
-                        <th>Owner</th>
-                        <th>Start date</th>
-                        <th>Start date</th>
-                        <th>Status</th>
-                        <th>Priority</th>
-                        <th>Group</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {(Array.isArray(tasks) ? tasks : []).map((task) => (
-                        <tr key={task.id}>
-                            <td><input type="checkbox" onChange={() => handleTaskSelection(task.id)} checked={selectedTaskIds.includes(task.id)}/></td>
-                            <td>{task.id}</td>
-                            <td onClick={() => handleFieldClick(task.id, 'task_name')}>
-                                {editingTaskId === task.id && editingField === 'task_name' ? (
-                                    <input
-                                        type="text"
-                                        name="task_name"
-                                        value={editedTask.task_name || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={() => handleBlur(task.id)}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    <Link to={`/tasks/${task.id}`}>{task.task_name}</Link>
-                                )}
-                            </td>
-                            <td onClick={() => handleFieldClick(task.id, 'task_description')}>
-                                {editingTaskId === task.id && editingField === 'task_description' ? (
-                                    <input
-                                        type="text"
-                                        name="task_description"
-                                        value={editedTask.task_description || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={() => handleBlur(task.id)}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    task.task_description
-                                )}
-                            </td>
-                            <td onClick={() => handleFieldClick(task.id, 'owner_id')}>
-                                {editingTaskId === task.id && editingField === 'owner_id' ? (
-                                    <input
-                                        type="text"
-                                        name="owner_id"
-                                        value={editedTask.owner_id || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={() => handleBlur(task.id)}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    task.owner_id
-                                )}
-                            </td>
-                            <td onClick={() => handleFieldClick(task.id, 'start_date')}>
-                                {editingTaskId === task.id && editingField === 'start_date' ? (
-                                    <input
-                                        type="datetime-local"
-                                        name="start_date"
-                                        value={editedTask.start_date || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={() => handleBlur(task.id)}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    task.start_date
-                                )}
-                            </td>
-                            <td onClick={() => handleFieldClick(task.id, 'due_date')}>
-                                {editingTaskId === task.id && editingField === 'due_date' ? (
-                                    <input
-                                        type="datetime-local"
-                                        name="due_date"
-                                        value={editedTask.due_date || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={() => handleBlur(task.id)}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    task.due_date
-                                )}
-                            </td>
-                            <td onClick={() => handleFieldClick(task.id, 'task_status')}>
-                                {editingTaskId === task.id && editingField === 'task_status' ? (
-                                    <select
-                                        type="text"
-                                        name="task_status"
-                                        value={editedTask.task_status || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={() => handleBlur(task.id)}
-                                        autoFocus
-                                    >
-                                        <option value="">Select Status</option>
-                                        <option value="Not Started">Not Started</option>
-                                        <option value="In Progress">In Progress</option>
-                                        <option value="On Hold">On Hold</option>
-                                        <option value="Completed">Completed</option>
-                                    </select>
-                                ) : (
-                                    task.task_status
-                                )}
-                            </td>
-                            <td onClick={() => handleFieldClick(task.id, 'priority')}>
-                                {editingTaskId === task.id && editingField === 'priority' ? (
-                                    <select
-                                        type="text"
-                                        name="priority"
-                                        value={editedTask.priority || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={() => handleBlur(task.id)}
-                                        autoFocus
-                                    >
-                                        <option value="">Select Priority</option>
-                                        <option value="Low">Low</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="High">High</option>
-                                    </select>
-                                ) : (
-                                    task.priority
-                                )}
-                            </td>
-                            <td onClick={() => handleFieldClick(task.id, 'group_name')}>
-                                {editingTaskId === task.id && editingField === 'group_name' ? (
-                                    <select
-                                        type="text"
-                                        name="group_name"
-                                        value={editedTask.group_name || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={() => handleBlur(task.id)}
-                                        autoFocus
-                                    >
-                                        <option value="Finance Department">Finance Department</option>
-                                        <option value="IT Department">IT Department</option>
-                                        <option value="HR Department">HR Department</option>
-                                    </select>
-                                ) : (
-                                    task.group_name
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            {/* Modal for adding new task */}
-            <Modal show={showModal} onHide={closeModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Create New Task</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form onSubmit={handleNewTaskSubmit}>
-                        <Form.Group>
-                            <Form.Label>Task Name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="task_name"
-                                value={newTask.task_name}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Form.Group><br />
+                    <Modal show={showFilterModal} onHide={closeFilterModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Filter Projects</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <Form.Group>
+                        <Form.Label>Project Status</Form.Label>
+                        <Form.Select name="task_status" value={filters.task_status} onChange={handleFilterChange}>
+                            <option value="Not Started">Not Started</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="On Hold">On Hold</option>
+                            <option value="Completed">Completed</option>
+                            <option value="">All</option>
+                        </Form.Select>
+                        </Form.Group>
+                        <br />
 
                         <Form.Group>
-                            <Form.Label>Task Description</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="task_description"
-                                value={newTask.task_description}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Form.Group><br />
+                        <Form.Label>Priority</Form.Label>
+                        <Form.Select name="priority" value={filters.priority} onChange={handleFilterChange}>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="">All</option>
+                        </Form.Select>
+                        </Form.Group>
+                        <br />
 
                         <Form.Group>
-                            <Form.Label>Task Owner ID</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="owner_id"
-                                value={newTask.owner_id}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Form.Group><br />
+                        <Form.Label>Group</Form.Label>
+                        <Form.Select
+                            name="group_name"
+                            value={filters.group_name}
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">All</option>
+                            {groups.map((group) => (
+                            <option key={group.id} value={group.name}>
+                                {group.name}
+                            </option>
+                            ))}
+                        </Form.Select>
+                        </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>Start Date</Form.Label>
-                            <Form.Control
-                                type="datetime-local"
-                                name="start_date"
-                                value={newTask.start_date}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Form.Group><br />
-
-                        <Form.Group>
-                            <Form.Label>Due Date</Form.Label>
-                            <Form.Control
-                                type="datetime-local"
-                                name="due_date"
-                                value={newTask.due_date}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Form.Group><br />
-
-                        <Form.Group>
-                            <Form.Label>Task Status</Form.Label>
-                            <Form.Select
-                                type="text"
-                                name="task_status"
-                                value={newTask.task_status}
-                                onChange={handleInputChange}
-                                required
-                            >
-                                <option value="">Select Status</option>
-                                <option value="Not Started">Not Started</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="On Hold">On Hold</option>
-                                <option value="Completed">Completed</option>
-                            </Form.Select>
-                        </Form.Group><br />
-
-                        <Form.Group>
-                            <Form.Label>Priority</Form.Label>
-                            <Form.Select
-                                type="text"
-                                name="priority"
-                                value={newTask.priority}
-                                onChange={handleInputChange}
-                                required
-                            >
-                                <option value="">Select Priority</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                            </Form.Select>
-                        </Form.Group><br />
-
-                        <Form.Group>
-                            <Form.Label>Group</Form.Label>
-                            <Form.Select
-                                type="text"
-                                name="group_name"
-                                value={newTask.group_name}
-                                onChange={handleInputChange}
-                            >
-                                <option value="">Select Department</option>
-                                <option value="Finance Department">Finance Department</option>
-                                <option value="IT Department">IT Department</option>
-                                <option value="HR Department">HR Department</option>
-                            </Form.Select>
-                        </Form.Group><br />
-                        <Button variant="primary" type="submit">
-                            Add Task
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={closeFilterModal}>
+                        Close
                         </Button>
-                    </Form>
-                </Modal.Body>
-            </Modal>
+                        <Button variant="primary" onClick={() => { closeFilterModal(); applyFilters(); }}>
+                        Apply Filters
+                        </Button>
+                    </Modal.Footer>
+                    </Modal>
+                    {showSortWindow && (
+                        <div className="sort-window">
+                            <h4>Sort Projects</h4>
+                            <label>
+                                Field:
+                                <select
+                                    value={sortColumn}
+                                    onChange={(e) => setSortColumn(e.target.value)}
+                                    style={{ marginLeft: '5px' }}
+                                >
+                                    {availableFields.map((field) => (
+                                        <option key={field.field} value={field.field}>
+                                            {field.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                            <label style={{ marginLeft: '15px' }}>
+                                Order:
+                                <select
+                                    value={sortOrder}
+                                    onChange={(e) => setSortOrder(e.target.value)}
+                                    style={{ marginLeft: '5px' }}
+                                >
+                                    <option value="asc">Ascending</option>
+                                    <option value="desc">Descending</option>
+                                </select>
+                            </label>
+                        </div>
+                    )}
+                </div>
+                <table className="task-table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>No</th>
+                            <th>Project</th>
+                            <th>Description</th>
+                            <th>Owner</th>
+                            <th>Assignees</th>
+                            <th>Start date</th>
+                            <th>Due date</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Group</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {(Array.isArray(tasks) ? tasks : []).map((task) => (
+                            <tr key={task.id}>
+                                <td><input type="checkbox" onChange={() => handleTaskSelection(task.id)} checked={selectedTaskIds.includes(task.id)}/></td>
+                                <td>{task.id}</td>
+                                <td onClick={() => handleFieldClick(task.id, 'task_name')}>
+                                    {editingTaskId === task.id && editingField === 'task_name' ? (
+                                        <input
+                                            type="text"
+                                            name="task_name"
+                                            value={editedTask.task_name || ''}
+                                            onChange={handleInputChange}
+                                            onBlur={() => handleBlur(task.id)}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        <Link to={`/tasks/${task.id}`} className="custom-link">{task.task_name}</Link>
+                                    )}
+                                </td>
+
+                                <td onClick={() => handleFieldClick(task.id, 'task_description')}>
+                                    {editingTaskId === task.id && editingField === 'task_description' ? (
+                                        <input
+                                            type="text"
+                                            name="task_description"
+                                            value={editedTask.task_description || ''}
+                                            onChange={handleInputChange}
+                                            onBlur={() => handleBlur(task.id)}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        task.task_description
+                                    )}
+                                </td>
+                                <td onClick={() => handleFieldClick(task.id, 'owner_id')}>
+                                    {editingTaskId === task.id && editingField === 'owner_id' ? (
+                                        <select
+                                            type="text"
+                                            name="owner_id"
+                                            value={editedTask.owner_id || ''}
+                                            onChange={handleInputChange}
+                                            onBlur={() => handleBlur(task.id, 'owner_id')}
+                                            autoFocus
+                                        >
+                                            {users.map((user) => (
+                                            <option key={user.user_id} value={user.user_id}>
+                                            {user.username}
+                                            </option>
+                                        ))}
+                                        </select>
+                                    ) : (
+                                        task.Users.username || 'No Username'
+                                    )}
+                                </td>
+                                <td onClick={() => handleFieldClick(task.id, 'assignees')}>
+                                    {editingTaskId === task.id && editingField === 'assignees' ? (
+                                        <select
+                                            name="assignees"
+                                            multiple
+                                            value={editedTask?.assignees || newTask?.assignees || []}
+                                            onChange={handleInputChange}
+                                            onBlur={() => handleBlur(task.id, 'assignees')}
+                                            autoFocus
+                                        >
+                                            {users.map((user) => (
+                                                <option key={user.user_id} value={user.user_id}>
+                                                    {user.username}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        task.assignees && task.assignees.length > 0 ? (
+                                            // Display all assignees as links to their profiles, separated by commas
+                                            task.assignees.map((assigneeId) => {
+                                                const assignee = users.find(user => user.user_id === assigneeId);
+                                                return assignee ? (
+                                                    <Link key={assigneeId} to={`/profile/${assigneeId}`} className="custom-link">
+                                                        {assignee.username}
+                                                    </Link>
+                                                ) : null;
+                                            }).reduce((prev, curr) => [prev, ', ', curr]) // Separate assignees with commas
+                                        ) : (
+                                            'No Assignees'
+                                        )
+                                    )}
+                                </td>
+                                <td onClick={() => handleFieldClick(task.id, 'start_date')}>
+                                    {editingTaskId === task.id && editingField === 'start_date' ? (
+                                        <input
+                                            type="datetime-local"
+                                            name="start_date"
+                                            value={editedTask.start_date || ''}
+                                            onChange={handleInputChange}
+                                            onBlur={() => handleBlur(task.id)}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        task.start_date
+                                    )}
+                                </td>
+                                <td onClick={() => handleFieldClick(task.id, 'due_date')}>
+                                    {editingTaskId === task.id && editingField === 'due_date' ? (
+                                        <input
+                                            type="datetime-local"
+                                            name="due_date"
+                                            value={editedTask.due_date || ''}
+                                            onChange={handleInputChange}
+                                            onBlur={() => handleBlur(task.id)}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        task.due_date
+                                    )}
+                                </td>
+                                <td onClick={() => handleFieldClick(task.id, 'task_status')}>
+                                    {editingTaskId === task.id && editingField === 'task_status' ? (
+                                        <select
+                                            type="text"
+                                            name="task_status"
+                                            value={editedTask.task_status || ''}
+                                            onChange={handleInputChange}
+                                            onBlur={() => handleBlur(task.id)}
+                                            autoFocus
+                                        >
+                                            <option value="">Select Status</option>
+                                            <option value="Not Started">Not Started</option>
+                                            <option value="In Progress">In Progress</option>
+                                            <option value="On Hold">On Hold</option>
+                                            <option value="Completed">Completed</option>
+                                        </select>
+                                    ) : (
+                                        task.task_status
+                                    )}
+                                </td>
+                                <td onClick={() => handleFieldClick(task.id, 'priority')}>
+                                    {editingTaskId === task.id && editingField === 'priority' ? (
+                                        <select
+                                            type="text"
+                                            name="priority"
+                                            value={editedTask.priority || ''}
+                                            onChange={handleInputChange}
+                                            onBlur={() => handleBlur(task.id)}
+                                            autoFocus
+                                        >
+                                            <option value="">Select Priority</option>
+                                            <option value="Low">Low</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="High">High</option>
+                                        </select>
+                                    ) : (
+                                        task.priority
+                                    )}
+                                </td>
+                                <td onClick={() => handleFieldClick(task.id, 'group_id')}>
+                                    {editingTaskId === task.id && editingField === 'group_id' ? (
+                                        <select
+                                            type="text"
+                                            name="group_id"
+                                            value={editedTask.group_id || ''}
+                                            onChange={handleInputChange}
+                                            onBlur={() => handleBlur(task.id, 'group_id')}
+                                            autoFocus
+                                        >
+                                            <option value="">Select Group</option>
+                                            {groups.map((group) => (
+                                                <option key={group.id} value={group.id}>
+                                                    {group.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        task.groups.name
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                {/* Modal for adding new task */}
+                <Modal show={showModal} onHide={closeModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create New Project</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form onSubmit={handleNewTaskSubmit}>
+                            <Form.Group>
+                                <Form.Label>Project Name</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="task_name"
+                                    value={newTask.task_name}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Form.Group><br />
+
+                            <Form.Group>
+                                <Form.Label>Project Description</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="task_description"
+                                    value={newTask.task_description}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Form.Group><br />
+
+                            <Form.Group>
+                                <Form.Label>Project Owner</Form.Label>
+                                <Form.Select
+                                    name="owner_id"
+                                    value={newTask.owner_id}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="">Select Owner</option>
+                                    {users.map((user) => (
+                                        <option key={user.id} value={user.id}>
+                                            {user.username}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group><br />
+
+                            <Form.Group>
+                                <Form.Label>Project Assignees</Form.Label>
+                                <Form.Select
+                                    name="assignees"
+                                    value={newTask.assignees} // Bind the assignees state
+                                    onChange={handleInputChange}
+                                    multiple // Allow multiple selections
+                                >
+                                    {users.map((user) => (
+                                        <option key={user.user_id} value={user.user_id}>
+                                            {user.username}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group><br />
+
+                            <Form.Group>
+                                <Form.Label>Start Date</Form.Label>
+                                <Form.Control
+                                    type="datetime-local"
+                                    name="start_date"
+                                    value={newTask.start_date}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Form.Group><br />
+
+                            <Form.Group>
+                                <Form.Label>Due Date</Form.Label>
+                                <Form.Control
+                                    type="datetime-local"
+                                    name="due_date"
+                                    value={newTask.due_date}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Form.Group><br />
+
+                            <Form.Group>
+                                <Form.Label>Project Status</Form.Label>
+                                <Form.Select
+                                    type="text"
+                                    name="task_status"
+                                    value={newTask.task_status}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="">Select Status</option>
+                                    <option value="Not Started">Not Started</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="On Hold">On Hold</option>
+                                    <option value="Completed">Completed</option>
+                                </Form.Select>
+                            </Form.Group><br />
+
+                            <Form.Group>
+                                <Form.Label>Priority</Form.Label>
+                                <Form.Select
+                                    type="text"
+                                    name="priority"
+                                    value={newTask.priority}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="">Select Priority</option>
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                </Form.Select>
+                            </Form.Group><br />
+
+                            <Form.Group>
+                                <Form.Label>Group</Form.Label>
+                                <Form.Select
+                                    name="group_name"
+                                    value={newTask.group_name}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Select Department</option>
+                                    {groups.map((group) => (
+                                        <option key={group.id} value={group.name}>
+                                            {group.name}
+                                        </option>
+                                    ))}
+                                </Form.Select>          
+
+                                {/* Button to open the modal for managing groups */}
+                                <Button variant="link" onClick={openGroupModal}> 
+                                    Manage Groups
+                                </Button>
+                            </Form.Group>
+
+                            <Modal show={showGroupModal} onHide={closeGroupModal} backdrop="static" keyboard={false}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Manage Groups</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    {/* Create new group section */}
+                                    <h5>Create New Group</h5>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter new group name"
+                                        value={newGroupName}
+                                        onChange={(e) => setNewGroupName(e.target.value)}
+                                    />
+                                    <Button variant="primary" onClick={handleCreateGroup} className="mt-2">
+                                        Create Group
+                                    </Button>                       
+
+                                    <hr />                      
+
+                                    {/* Current groups section */}
+                                    <h5>Current Groups</h5>
+                                    {groups.map((group) => (
+                                        <div key={group.id} className="d-flex justify-content-between mt-2">
+                                            <span>{group.name}</span>
+                                            <Button variant="danger" onClick={() => handleRemoveGroup(group.id)}>
+                                                Remove
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={closeGroupModal}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                            
+                            <Button variant="primary" type="submit">
+                                Add Project
+                            </Button>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+            </div>
         </div>
     );
 };

@@ -1,66 +1,156 @@
+
+.task-list-page {
+    background: linear-gradient(to bottom, #a0c7c9, #f6d68b); /* Gradient background for the page */
+    min-height: 100vh; /* Ensures the page takes up the full viewport height */
+}
+
 .task-list {
-    width: 80%;
-    margin: 20px auto;
-    background-color: #203324;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
+    width: 80%; /* Task list width set to 80% of the viewport */
+    margin: 0px auto; /* Centers the task list */
+    background-color: #F7AB3B; /* Yellow background color */
+    color: white; /* White text color */
+    padding: 20px; /* Padding around the task list */
+    border-radius: 10px; /* Rounded corners for the task list */
 }
-  
+
+/* Header section */
 .task-list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    display: flex; /* Flexbox layout to align content */
+    justify-content: space-between; /* Space out elements horizontally */
+    align-items: center; /* Aligns items vertically in the center */
+    margin-bottom: 20px; /* Adds space below the header */
 }
-  
+
 .task-list-header h1 {
-    font-size: 36px;
-    margin: 0;
+    font-size: 36px; /* Large font size for the header */
+    color: #048492; /* Greenish-blue color for the header text */
+    margin: 0; /* Removes default margin */
 }
-  
+
 .new-task-button {
-    background-color: #d4c21d;
-    color: black;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    background-color: #048492; /* Greenish-blue background color for the button */
+    color: #ffffff; /* White text color */
+    padding: 10px 20px; /* Adds padding inside the button */
+    border: none; /* Removes default button border */
+    border-radius: 5px; /* Rounded corners for the button */
+    cursor: pointer; /* Changes cursor to pointer on hover */
 }
-  
+
 .task-list-actions button {
-    margin-right: 10px;
-    background-color: transparent;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
+    margin-right: 10px; /* Adds space between action buttons */
+    background-color: transparent; /* Transparent background */
+    color: white; /* White text color */
+    border: none; /* Removes button border */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 18px; /* Font size for the action buttons */
 }
-  
+
+/* Table styles */
 .task-table {
-    width: 100%;
-    border-collapse: collapse;
+    width: 100%; /* Full width of the task list container */
+    border-collapse: collapse; /* Removes space between table borders */
 }
-  
+
 .task-table th,
 .task-table td {
-    padding: 10px;
-    border: 1px solid #456546;
+    padding: 10px; /* Padding inside table cells */
+    border: 1px solid #456546; /* Dark green border for the table */
 }
-  
+
 .task-table th {
-    background-color: #2d4b31;
-    font-weight: normal;
+    background-color: #048492; /* Greenish-blue background color for table headers */
+    font-weight: normal; /* Normal font weight */
 }
-  
-.task-table td input[type="radio"] {
-    cursor: pointer;
+
+.task-table td input[type="checkbox"] {
+    cursor: pointer; /* Pointer cursor when hovering over checkboxes */
 }
-  
+
 .task-table tbody tr:nth-child(even) {
-    background-color: #29413c;
+    background-color: #048492; /* Greenish-blue background for even rows */
 }
-  
+
 .task-table tbody tr:nth-child(odd) {
-    background-color: #203324;
+    background-color: #048492; /* Greenish-blue background for odd rows */
+}
+
+/* Custom link styles */
+.custom-link {
+    color: #F7AB3B; /* Yellow color for custom links */
+}
+
+.custom-link:hover {
+    color: #F7AB3B; /* Keeps the same color on hover */
+}
+
+/* Responsive styles */
+
+/* For tablets and small screens (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .task-list {
+        width: 90%; /* Expands the width to 90% for tablets */
+        padding: 15px; /* Reduces padding */
+    }
+
+    .task-list-header h1 {
+        font-size: 32px; /* Reduces header font size */
+    }
+
+    .new-task-button {
+        padding: 8px 16px; /* Smaller button padding */
+    }
+
+    .task-list-actions button {
+        font-size: 16px; /* Reduces button font size */
+    }
+
+    .task-table th,
+    .task-table td {
+        padding: 8px; /* Reduces padding inside table cells */
+    }
+}
+
+/* For mobile devices (max-width: 768px) */
+@media (max-width: 768px) {
+    .task-list {
+        width: 95%; /* Expands the width to 95% for mobile devices */
+        padding: 10px; /* Smaller padding */
+    }
+
+    .task-list-header {
+        flex-direction: column; /* Stacks the header content vertically */
+        align-items: flex-start; /* Aligns items to the left */
+    }
+
+    .task-list-header h1 {
+        font-size: 28px; /* Smaller font size for mobile */
+        margin-bottom: 10px; /* Adds space below the header */
+    }
+
+    .new-task-button {
+        padding: 8px 12px; /* Smaller padding for the button */
+        font-size: 14px; /* Smaller font size for mobile */
+    }
+
+    .task-list-actions {
+        width: 100%; /* Full width for the actions section */
+        display: flex;
+        justify-content: space-between; /* Spreads out the action buttons */
+        margin-top: 10px; /* Adds space above the action buttons */
+    }
+
+    .task-list-actions button {
+        font-size: 14px; /* Smaller font size for action buttons */
+        margin-right: 5px; /* Reduces space between buttons */
+    }
+
+    .task-table th,
+    .task-table td {
+        font-size: 14px; /* Smaller font size for table text */
+        padding: 6px; /* Smaller padding for table cells */
+    }
+
+    .task-table {
+        font-size: 12px; /* Reduces the overall table font size */
+    }
 }
