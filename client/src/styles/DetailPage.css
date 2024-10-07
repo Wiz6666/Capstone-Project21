@@ -1,32 +1,60 @@
+/* Global styles, resetting default margin and padding for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+  
+body, html {
+    font-family: Arial, sans-serif; /* Setting global font */
+    height: 100%; /* Ensures body and html take up full viewport height */
+}
+  
 .task-details {
-    width: 80%;
-    margin: 20px auto;
-    background-color: #203324;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-  }
+    display: flex;
+    flex-direction: column; /* Aligns child elements in a column */
+    align-items: center; /* Centers items horizontally */
+    background: linear-gradient(to bottom, #a0c7c9, #f6d68b); /* Gradient background */
+    justify-content: flex-start; /* Aligns content to the top */
+    min-height: 100vh; /* Ensures the section takes up at least full viewport height */
+    padding: 20px; /* Padding around the section */
+}
   
-  .task-details h1 {
-    font-size: 36px;
-    margin-bottom: 20px;
-  }
+.task-details {
+    margin-top: 0px;
+    font-size: 2.5em; /* Enlarges the title */
+    margin-bottom: 30px; /* Adds spacing below the title */
+    color: #048492; /* Sets the title color to blue */
+    font-weight: bold; /* Makes the title bold */
+    text-align: center; /* Centers the title text */
+    position: relative;
+}
+
+.task-info {
+    background-color: #F7AB3B; /* Yellow background for the info box */
+    padding: 40px; /* Padding inside the info box */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Adds shadow for a subtle 3D effect */
+    width: 100%; /* Ensures the box takes full width */
+    max-width: 1500px; /* Limits the box width */
+    height: 600px; /* Fixed height for the box */
+    margin-top: -30px; /* Adds space above the info box */
+    text-align: left; /* Aligns text to the left */
+    font-size: xx-large; /* Sets large font size */
+    font-weight: bold; /* Makes the text bold */
+}
   
-  .task-info p {
-    font-size: 18px;
-    margin: 10px 0;
-  }
+.task-info p {
+    margin-bottom: 15px; /* Adds space between paragraphs */
+    font-size: 1.2em; /* Slightly larger font size */
+    font-weight: bold; /* Boldens the paragraph text */
+    color: #ffffff; /* Sets the text color to white */
+}
   
-  .task-info strong {
-    font-size: 20px;
-    margin-right: 10px;
-  }
-  
-  .assignee-image {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin-right: 10px;
-    vertical-align: middle;
-  }
-  
+.avatar {
+    width: 50px; /* Width of the avatar image */
+    height: 50px; /* Height of the avatar image */
+    border-radius: 50%; /* Makes the avatar circular */
+    margin-right: 10px; /* Adds space to the right of the avatar */
+    vertical-align: middle; /* Aligns the avatar with the text */
+}

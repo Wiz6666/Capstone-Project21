@@ -75,7 +75,7 @@ const styles = {
     position: 'relative',
     height: '100vh', // Full viewport height
     width: '100%',
-    background: 'linear-gradient(90deg, #142924 10%, rgba(101, 125, 131, 0.9) 90%)', // Gradient background
+    background: 'linear-gradient(to bottom, #a0c7c9, #f6d68b)', // Updated gradient background
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center', // Centers content vertically
@@ -84,7 +84,7 @@ const styles = {
   title: {
     fontSize: '60px',
     fontWeight: 'bold',
-    color: '#FFFFFF', // White text for contrast
+    color: '#048492', // White text for contrast
     marginBottom: '60px',
     textAlign: 'center',
     textTransform: 'uppercase', // Ensures the title text is in uppercase letters
@@ -92,7 +92,7 @@ const styles = {
     marginTop: '-100px', // Adjusts the title position for better layout
   },
   overlay: {
-    backgroundColor: '#142924', // Dark background for the content container
+    backgroundColor: '#F7AB3B', // Updated to orange color
     padding: '40px',
     borderRadius: '20px', // Rounded corners for smoother design
     textAlign: 'center',
@@ -108,8 +108,9 @@ const styles = {
     width: '80%',
     padding: '15px',
     marginBottom: '20px', // Adds space between input fields
+    fontWeight: 'bold',
     borderRadius: '20px', // Rounded corners for input fields
-    border: '1px solid #FFFFFF', // White border for contrast
+    border: '2px solid #FFFFFF', // White border for contrast
     backgroundColor: 'transparent',
     color: '#FFFFFF',
     textAlign: 'center',
@@ -121,7 +122,8 @@ const styles = {
     fontSize: '18px',
     borderRadius: '20px', // Consistent rounded corners for buttons
     border: 'none',
-    backgroundColor: '#5A5E63', // Button background color
+    fontWeight: 'bold',
+    backgroundColor: '#048492', // Button background color
     color: '#FFFFFF', // White text on the button for contrast
     cursor: 'pointer', // Changes the cursor to pointer on hover
   },
@@ -137,5 +139,18 @@ const styles = {
   },
 };
 
+// Additional global styles for the placeholder
+const globalStyles = `
+  input::placeholder {
+    color: #FFFFFF; /* Placeholder text color set to white */
+    opacity: 1; /* Ensures the placeholder is fully visible */
+  }
+`;
+
+// Append global styles to the document head
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = globalStyles;
+document.head.appendChild(styleSheet);
 
 export default ForgetPasswordPage;

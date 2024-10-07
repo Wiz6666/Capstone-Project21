@@ -1,66 +1,91 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; 
+import '../styles/HomePage.css';
 
-const CombinedPage = () => {
-  const navigate = useNavigate(); 
+const HomePage = () => {
+  // Hook to navigate between pages
+  const navigate = useNavigate();
 
   return (
-    <div style={styles.container}>
-      <div style={styles.page}>
-        <div className="homepage" style={styles.fullHeightSection}>
-          <video autoPlay loop muted className="video-background" style={styles.video}>
+    <div className="container">
+      {/* First section with a full-page background video */}
+      <div className="page">
+        <div className="homepage fullHeightSection">
+          <video autoPlay loop muted className="video-background">
+            {/* Background video for the homepage */}
             <source src={`${process.env.PUBLIC_URL}/24 uwa capstone Group20 webpage background video.mp4`} type="video/mp4" />
+            {/* Fallback text for unsupported browsers */}
             Your browser does not support the video tag.
           </video>
-          <div style={styles.overlay}>
-            <div style={styles.textContainer}>
-              <h1 style={styles.title}>PROJECT MANAGEMENT SYSTEM</h1>
-              <div style={styles.buttonsContainer}>
-                <button style={styles.button} onClick={() => navigate('/login')}>Sign in</button>
-                <button style={styles.button} onClick={() => navigate('/register')}>Sign up</button>
+          <div className="overlay">
+            <div className="textContainer">
+              {/* Title and buttons for signing in or signing up */}
+              <h1 className="title">PROJECT MANAGEMENT SYSTEM</h1>
+              <div className="buttonsContainer">
+                {/* Button to navigate to the login page */}
+                <button className="button" onClick={() => navigate('/login')}>Sign in</button>
+                {/* Button to navigate to the register page */}
+                <button className="button" onClick={() => navigate('/register')}>Sign up</button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div style={styles.page}>
-        <div className="homepage" style={{ ...styles.fullHeightSection, ...styles.gradientBackground }}>
-          <div style={styles.infoSection}>
-            <h1 style={styles.title}>WHAT IS AASYP PMS?</h1>
-            <p style={styles.description}>
-              Our mission is to empower teams and individuals to achieve their goals efficiently through a user-friendly project management platform. We strive to provide a seamless collaboration experience, enabling users to streamline workflows, track progress, and deliver projects on time.
-            </p>
-          </div>
-          <div style={styles.videoContainer}>
-            <video autoPlay loop muted style={styles.videoSmall}>
-              <source src={`${process.env.PUBLIC_URL}/PMS.mp4`} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+      {/* Second section with gradient background and text + small video */}
+      <div className="page">
+        <div className="homepage fullHeightSection gradientBackground">
+          <div className="contentContainer">
+            <div className="infoSection">
+              {/* Section explaining what the system is */}
+              <h1 className="title">WHAT IS AASYP PMS?</h1>
+              <p className="description">
+                Our mission is to empower teams and individuals to achieve their goals efficiently through a user-friendly project management platform. We strive to provide a seamless collaboration experience, enabling users to streamline workflows, track progress, and deliver projects on time.
+              </p>
+            </div>
+            <div className="videoContainer">
+              {/* Small video related to the platform explanation */}
+              <video autoPlay loop muted className="videoSmall">
+                <source src={`${process.env.PUBLIC_URL}/PMS.mp4`} type="video/mp4" />
+                {/* Fallback text for unsupported browsers */}
+                Your browser does not support the video tag.
+              </video>
+            </div>
           </div>
         </div>
       </div>
 
-      <div style={styles.page}>
-        <video autoPlay loop muted className="video-background" style={styles.video}>
+      {/* Third section with contact information */}
+      <div className="page">
+        {/* Background video for the contact page */}
+        <video autoPlay loop muted className="video-background">
           <source src={`${process.env.PUBLIC_URL}/24 uwa capstone Group20 webpage background video.mp4`} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <div style={styles.overlay}>
-          <div style={styles.content}>
-            <h1 style={styles.title}>CONTACT US</h1>
-            <div style={styles.info}>
-              <p style={styles.label}>PHONE</p>
-              <p style={styles.value}>(123) 456-7890</p>
-              <p style={styles.label}>EMAIL</p>
-              <p style={styles.value}>team@aasyp.org</p>
-              <p style={styles.label}>SOCIAL</p>
-              <div style={styles.socialIcons}>
-                <a href="#" style={styles.icon}><i className="fab fa-tumblr"></i></a>
-                <a href="#" style={styles.icon}><i className="fab fa-facebook-f"></i></a>
-                <a href="#" style={styles.icon}><i className="fab fa-youtube"></i></a>
-                <a href="#" style={styles.icon}><i className="fab fa-instagram"></i></a>
-                <a href="#" style={styles.icon}><i className="fab fa-linkedin-in"></i></a>
+        <div className="overlay">
+          <div className="content">
+            {/* Contact section with phone, email, and social media links */}
+            <h1 className="title">CONTACT US</h1>
+            <div className="info">
+              <p className="label">PHONE</p>
+              <p className="value">(123) 456-7890</p>
+              <p className="label">EMAIL</p>
+              <p className="value">team@aasyp.org</p>
+              <p className="label">SOCIAL</p>
+              {/* Social media icons linking to external sites */}
+              <div className="socialIcons">
+                <a href="https://twitter.com/ausaseanyouth" className="icon" target="_blank" rel="noopener noreferrer">
+                  <img src="/twitter.png" alt="Twitter" className="social-icon-img" />
+                </a>
+                <a href="https://www.facebook.com/aasyp" className="icon" target="_blank" rel="noopener noreferrer">
+                  <img src="/facebook.png" alt="Facebook" className="social-icon-img" />
+                </a>
+                <a href="https://www.instagram.com/aus_aseanyouth/" className="icon" target="_blank" rel="noopener noreferrer">
+                  <img src="/ins.png" alt="Instagram" className="social-icon-img" />
+                </a>
+                <a href="https://www.linkedin.com/company/aasyp" className="icon" target="_blank" rel="noopener noreferrer">
+                  <img src="/linkedin.png" alt="LinkedIn" className="social-icon-img" />
+                </a>
               </div>
             </div>
           </div>
@@ -68,123 +93,6 @@ const CombinedPage = () => {
       </div>
     </div>
   );
-};
+}
 
-const styles = {
-  container: {
-    height: '300vh', // Each page will take up full viewport height, so total height is 3x viewport height
-  },
-  page: {
-    position: 'relative',
-    height: '100vh', // Each page takes up full viewport height
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  fullHeightSection: {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-  },
-  gradientBackground: {
-    background: 'linear-gradient(90deg, rgba(20,41,36,0.1) 0%, #657d83 100%)',
-  },
-  video: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    zIndex: -1,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textContainer: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    textAlign: 'center',
-    color: '#FFFFFF',
-  },
-  title: {
-    fontSize: '36px',
-    fontWeight: 'bold',
-    marginBottom: '20px',
-  },
-  buttonsContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-  },
-  button: {
-    padding: '10px 20px',
-    fontSize: '18px',
-    color: '#FFFFFF',
-    backgroundColor: '#2E4A29',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  infoSection: {
-    flex: 1,
-    padding: '20px',
-    color: '#FFFFFF',
-    textAlign: 'left',
-  },
-  description: {
-    fontSize: '18px',
-    lineHeight: '1.5',
-  },
-  videoContainer: {
-    flex: 1,
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    padding: '20px',
-  },
-  videoSmall: {
-    width: '40%', // Adjusted to half the original size
-    borderRadius: '10px',
-  },
-  content: {
-    color: '#FFFFFF',
-    textAlign: 'left',
-    maxWidth: '600px',
-  },
-  info: {
-    fontSize: '18px',
-    lineHeight: '1.5',
-  },
-  label: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    marginTop: '20px',
-  },
-  value: {
-    marginBottom: '20px',
-  },
-  socialIcons: {
-    display: 'flex',
-    justifyContent: 'left',
-    marginTop: '10px',
-  },
-  icon: {
-    fontSize: '24px',
-    color: '#FFFFFF',
-    marginRight: '20px',
-    textDecoration: 'none',
-  },
-};
-
-export default CombinedPage;
+export default HomePage;

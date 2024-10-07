@@ -182,21 +182,13 @@ const styles = {
     transform: 'translate(-50%, -50%)', // Centers the video both horizontally and vertically
     zIndex: '-1', // Places the video behind other content
   },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay to make the text more readable
-  },
   textContainer: {
     position: 'absolute',
     top: '45%',
     left: '15%',
     transform: 'translate(-50%, -50%)',
     textAlign: 'left',
-    color: '#FFFFFF', // White text for better visibility
+    color: '#048492', // White text for better visibility
     width: '100%',
     maxWidth: '400px',
   },
@@ -214,6 +206,7 @@ const styles = {
     lineHeight: '1.4',  // Increases line height for readability
     maxWidth: '400px',
     textAlign: 'left',
+    fontWeight: 'bold'
   },
   signUp: {
     fontSize: '40px',
@@ -232,7 +225,7 @@ const styles = {
     padding: '15px',
     fontSize: '16px',
     color: '#FFFFFF',
-    backgroundColor: '#2E4A29', // Dark background for the input fields
+    backgroundColor: '#048492', // Dark background for the input fields
     border: 'none',
     borderRadius: '20px', // Rounded corners for inputs
     textAlign: 'center',
@@ -243,7 +236,7 @@ const styles = {
     padding: '15px 20px',
     fontSize: '18px',
     color: '#FFFFFF',
-    backgroundColor: '#2E4A29', // Dark green button to match the theme
+    backgroundColor: '#048492', // Dark green button to match the theme
     border: 'none',
     borderRadius: '20px',
     cursor: 'pointer',
@@ -252,10 +245,11 @@ const styles = {
   },
   link: {
     padding: '14px 10px',
-    fontSize: '13px',
-    color: '#FFFFFF',
+    fontSize: '12px',
+    color: '#048492',
+    fontWeight: 'bold',
     backgroundColor: 'transparent',
-    border: '1px solid #FFFFFF',
+    border: '2px solid #048492',
     borderRadius: '20px',
     cursor: 'pointer',
     width: '45%',

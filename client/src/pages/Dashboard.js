@@ -1,44 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/DashboardPage.css';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList } from 'recharts';
 
+// Color palette for charts
 const COLORS = ['#0088FE', '#FF8042', '#FFBB28'];
 
 const DashboardPage = () => {
+  // State to hold the dashboard data fetched from the API
   const [dashboardData, setDashboardData] = useState({
-    totalTasks: 0,
-    toDoTasks: 0,
-    inProgressTasks: 0,
-    completedTasks: 0,
-    highPriority: 0,  //new
-    mediumPriority: 0, //new
-    lowPriority: 0,    //new
-    taskCompletionRate: 0, // new
-    startDates: [],        // new
-    dueDates: [],          // new
-    statuses: [],          // new
-    durations: [],         // new
-    groupTaskCounts: [],   // new
-
+    totalTasks: 0,            // Total number of tasks
+    toDoTasks: 0,             // Number of tasks in "To Do" status
+    inProgressTasks: 0,       // Number of tasks in "In Progress" status
+    completedTasks: 0,        // Number of completed tasks
+    highPriority: 0,          // Number of high-priority tasks
+    mediumPriority: 0,        // Number of medium-priority tasks
+    lowPriority: 0,           // Number of low-priority tasks
+    taskCompletionRate: 0,    // Percentage of tasks completed
+    startDates: [],           // Array of task start dates
+    dueDates: [],             // Array of task due dates
+    taskname_duration: [],    // Array of task names and their durations
+    durations: [],            // Array of task durations
+    groupTaskCounts: [],      // Array of task counts by group
   });
 
+  // Define the base URL for API requests using environment variables
   const baseUrl = `${window.location.protocol}//${window.location.hostname}:${process.env.REACT_APP_API_PORT}`;
 
+  // Fetch dashboard data from the API when the component is mounted
   useEffect(() => {
-    // Fetch data from the backend API dynamically based on the current URL
     fetch(`${baseUrl}/dashboard-data?timestamp=${new Date().getTime()}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      mode: 'cors',
-      credentials: 'same-origin', // or 'include' if working with cookies
+      mode: 'cors',                 // Enable CORS for cross-origin requests
+      credentials: 'same-origin',   // Include credentials (cookies) if necessary
     })
       .then(response => {
-
         console.log('Response Status:', response.status);
         console.log('Response Headers:', response.headers.get('content-type'));
-
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -47,52 +47,54 @@ const DashboardPage = () => {
       .then(data => {
         if (data) {
           console.log('Received data:', data);
-          // update state with fetched data
+          // Update state with the fetched data
           setDashboardData({
-            //task基础数据
             totalTasks: data.totalTasks || 0,
             toDoTasks: data.toDoTasks || 0,
             inProgressTasks: data.inProgressTasks || 0,
             completedTasks: data.completedTasks || 0,
-            //task完成率
             taskCompletionRate: data.taskCompletionRate || 0,
-
-            //优先级相关数据
             highPriority: data.highPriority || 0,
             mediumPriority: data.mediumPriority || 0,
             lowPriority: data.lowPriority || 0,
-
-            //各个group所属项目数据
             groupTaskCounts: data.groupTaskCounts || [],
-
-            //duration相关数据：
-            taskname_duration: data.taskname_duration || [],//获取后端返回的 taskname 
-            durations: data.durations || [], // 获取后端返回的 durations 数据
-            taskNames: data.taskNames || [], // 获取后端返回的任务名称数据
-            startDates: data.startDates || [], // 获取开始日期
-            dueDates: data.dueDates || [], // 获取结束日期
+            taskname_duration: data.taskname_duration || [],
+            durations: data.durations || [],
+            startDates: data.startDates || [],
+            dueDates: data.dueDates || [],
           });
         }
       })
       .catch(error => {
         console.error('Error fetching data:', error);
       });
-  }, [baseUrl]);
+  }, [baseUrl]); // The effect depends on the baseUrl, so it runs when baseUrl changes
 
-
-  const dataPie = [
-    { name: 'Completed', value: dashboardData.completedTasks },
-    { name: 'In Progress', value: dashboardData.inProgressTasks },
-    { name: 'To Do', value: dashboardData.toDoTasks },
+  // Define the data for the Pie chart to show task priorities
+  const dataPriorityPie = [
+    { name: 'High Priority', value: dashboardData.highPriority },
+    { name: 'Medium Priority', value: dashboardData.mediumPriority },
+    { name: 'Low Priority', value: dashboardData.lowPriority },
   ];
 
-  const dataBar = [
+  // Define the data for the Bar chart showing tasks by status
+  const dataStatusBar = [
     { name: 'To Do', tasks: dashboardData.toDoTasks },
     { name: 'In Progress', tasks: dashboardData.inProgressTasks },
     { name: 'Completed', tasks: dashboardData.completedTasks },
   ];
 
+  // Define the data for the Pie chart to show tasks by group
+  const dataGroupPie = dashboardData.groupTaskCounts.map(group => ({
+    name: group.groupName,
+    value: group.taskCount,
+  }));
 
+  // Define the data for the Bar chart showing task durations
+  const dataDurationsBar = dashboardData.taskname_duration.map((taskName, index) => ({
+    name: taskName,
+    duration: dashboardData.durations[index],
+  }));
 
   return (
     <div className="dashboard-container">
