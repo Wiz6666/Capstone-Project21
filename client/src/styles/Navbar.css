@@ -1,0 +1,35 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  background-color: #0b8493 !important; /* Use !important to force apply this background color */
+  padding: 10px 20px; /* Add padding around the navbar for spacing */
+}
+
+.navbar-logo img {
+  width: 90px; /* Set logo image width to 90px */
+}
+
+.navbar-menu {
+  list-style: none; /* Remove bullet points from the menu list */
+  display: flex; /* Display menu items in a horizontal row */
+  flex-grow: 1; /* Allow the menu to grow and take available space */
+  justify-content: flex-end; /* Align menu items to the right */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+}
+
+.navbar-menu li {
+  margin: 0 20px; /* Add horizontal space between menu items */
+}
+
+.navbar-menu li a {
+  text-decoration: none; /* Remove underline from links */
+  color: white; /* Set link text color to white */
+  font-weight: bold; /* Make link text bold */
+}
+
+.navbar-login a {
+  text-decoration: none; /* Remove underline from login link */
+  color: white; /* Set login link text color to white */
+  font-weight: bold; /* Make login link text bold */
+}

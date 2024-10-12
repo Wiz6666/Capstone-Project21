@@ -1,0 +1,12 @@
+.footer {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    background-color: transparent; 
+    padding: 10px 0;
+    color:#0b8493 ;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+}
