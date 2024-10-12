@@ -18,6 +18,7 @@ const RegisterPage = () => {
     e.preventDefault();
     console.log('Registration started');
 
+
     // Check if email is a company email
     if (!email.endsWith('@aasyp.org')) {
       setError("Please use a company email address ending with @aasyp.org");

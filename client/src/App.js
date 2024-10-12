@@ -1,4 +1,4 @@
-
+// App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { supabase } from './supabaseClient'; // Import Supabase client for authentication
@@ -13,6 +13,7 @@ import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/Dashboard';
 import TaskList from './pages/TaskPage';
 import TaskDetails from './pages/DetailPage';
+import ProjectBoard from './pages/ProjectPage'; 
 
 function App() {
   const [session, setSession] = useState(null); // State to manage user session
@@ -51,7 +52,9 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgetPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/project" element={<TaskList />} />
+          <Route path="/project" element={<ProjectBoard />} />
+          {/* Added routing for project task page */}
+          <Route path="/project/:projectId/tasks" element={<TaskList />} />
           <Route path="/tasks/:id" element={<TaskDetails />} />
 
           {/* Protected routes - only accessible if the user is authenticated */}

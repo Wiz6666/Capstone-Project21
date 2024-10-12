@@ -1,0 +1,180 @@
+/* 1. Set the background of the entire project board to the specified linear gradient */
+.project-board {
+  background: linear-gradient(to bottom, #a0c7c9, #f6d68b); /* Specified linear gradient background */
+  min-height: 100vh; /* Make sure the background covers the entire viewport height */
+  padding-bottom: 40px; /* Leave space at the bottom */
+}
+
+/* PROJECT BOARD style */
+.project-board-title {
+  color: #048492; /* Set to #048492 */
+  font-size: 2.5em;
+  margin: 0;
+}
+
+/* 2. Header style */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  background-color: ffffff;
+  border-bottom: 1px solid #ddd;
+}
+
+/* 3. New project button */
+.new-project-btn {
+  padding: 10px 15px;
+  background-color: #048492;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 100px;
+}
+
+.new-project-btn:hover {
+  background-color: #0056b3;
+}
+
+/* 4. Delete Item Button */
+.delete-project-btn {
+  padding: 10px 45px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 100px;
+}
+
+.delete-project-btn:disabled {
+  background-color: #e0aeb0;
+  cursor: not-allowed;
+}
+
+.delete-project-btn:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+/* 5. Search Bar */
+.search-bar {
+  background: #048492;
+  margin-left: 500px;
+  padding: 8px 12px;
+  border: 1px solid #048492;
+  border-radius: 4px;
+}
+
+/* 6. Item container, enable horizontal scrolling */
+.projects-container {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  padding: 20px;
+  gap: 20px;
+}
+
+/* 7. Single project card style */
+.project-card {
+  background-color: #F7AB3B; /* Set the project card background color to #F7AB3B */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 300px; /* Fixed width of 300px */
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0; /* Prevent cards from shrinking */
+  position: relative;
+  color: #000000; /* Set the text color to black for better readability */
+}
+
+/* 8. Project card hover effect */
+.project-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.project-card.selected {
+  border-color: #007bff;
+  background-color: #1ABC9C; /* Background color in selected state */
+  color: #ffffff; /* The text color in the selected state is white */
+}
+
+/* 9. Item title and checkbox */
+.project-title {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Increase spacing */
+  justify-content: center; /* Center Align */
+  margin-bottom: 10px;
+}
+
+.project-name {
+  color: #048492; /* Set the project title color to #048492 */
+  text-align: center; /* Center Align */
+}
+
+.project-title h2 {
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+/* 10. Editable title style, display ellipsis */
+.editable-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px; /* Adjust according to the width of the project card */
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 1.2em; /* Adjust the font size as needed */
+  color: #048492; /* Set to #048492 */
+}
+
+/* 11. The input box style when editing the project title */
+.edit-project-input {
+  width: 100%;
+  padding: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 12. Item selection checkbox */
+.project-checkbox {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+/* 13. Task List Style */
+.task-list {
+  list-style: none;
+  padding: 0;
+}
+
+.task-container {
+  background-color: #048492; /* Set the task box background color to #048492 */
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.task-label {
+  cursor: default;
+}
+
+/* 14. No project message style */
+.no-projects-message {
+  text-align: center;
+  margin-top: 20px;
+  color: #555;
+  font-size: 1.2em;
+}
+
+/* 15. Error message style */
+.error-message {
+  color: red;
+  margin-bottom: 20px;
+  text-align: center;
+}
