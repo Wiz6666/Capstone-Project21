@@ -37,14 +37,14 @@ const HomePage = () => {
         <div className="homepage fullHeightSection gradientBackground">
           <div className="contentContainer">
             <div className="infoSection">
-              {/* Section explaining what the system is */}
+              {/* Section explaining the purpose of the project management system */}
               <h1 className="title">WHAT IS AASYP PMS?</h1>
               <p className="description">
                 Our mission is to empower teams and individuals to achieve their goals efficiently through a user-friendly project management platform. We strive to provide a seamless collaboration experience, enabling users to streamline workflows, track progress, and deliver projects on time.
               </p>
             </div>
             <div className="videoContainer">
-              {/* Small video related to the platform explanation */}
+              {/* Small video explaining the features of the project management system */}
               <video autoPlay loop muted className="videoSmall">
                 <source src={`${process.env.PUBLIC_URL}/PMS.mp4`} type="video/mp4" />
                 {/* Fallback text for unsupported browsers */}
@@ -60,20 +60,21 @@ const HomePage = () => {
         {/* Background video for the contact page */}
         <video autoPlay loop muted className="video-background">
           <source src={`${process.env.PUBLIC_URL}/24 uwa capstone Group20 webpage background video.mp4`} type="video/mp4" />
+          {/* Fallback text for unsupported browsers */}
           Your browser does not support the video tag.
         </video>
         <div className="overlay">
           <div className="content">
-            {/* Contact section with phone, email, and social media links */}
+            {/* Contact section with email and social media links */}
             <h1 className="title">CONTACT US</h1>
             <div className="info">
-              <p className="label">PHONE</p>
-              <p className="value">(123) 456-7890</p>
+              {/* Email contact information */}
               <p className="label">EMAIL</p>
               <p className="value">team@aasyp.org</p>
+              {/* Social media links */}
               <p className="label">SOCIAL</p>
-              {/* Social media icons linking to external sites */}
               <div className="socialIcons">
+                {/* Links to external social media pages */}
                 <a href="https://twitter.com/ausaseanyouth" className="icon" target="_blank" rel="noopener noreferrer">
                   <img src="/twitter.png" alt="Twitter" className="social-icon-img" />
                 </a>
