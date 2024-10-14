@@ -1,0 +1,109 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif; /* Set default font for the page */
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column; /* Arrange content in a vertical column */
+  min-height: 100vh; /* Ensure the container takes up at least the full viewport height */
+  background: linear-gradient(to bottom, #a0c7c9, #f6d68b); /* Gradient background for the dashboard */
+  color: white; /* Set default text color to white */
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between; /* Space out navbar items evenly */
+  align-items: center; /* Align items vertically */
+  padding: 10px 20px; /* Add padding inside the navbar */
+  background-color: #1B3B2A; /* Dark green background color for the navbar */
+}
+
+.search-bar {
+  background-color: #264D3D; /* Dark green background for the search bar */
+  border: none; /* Remove default border */
+  padding: 5px 10px; /* Padding inside the search bar */
+  color: white; /* White text color for the search bar */
+}
+
+nav ul {
+  list-style: none; /* Remove default list style */
+  display: flex; /* Arrange list items horizontally */
+  margin: 0;
+  padding: 0; /* Remove default margin and padding */
+}
+
+nav ul li {
+  margin: 0 15px; /* Add space between each list item */
+  cursor: pointer; /* Change cursor to pointer when hovering over items */
+}
+
+.user-icon img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%; /* Make the user icon circular */
+}
+
+.dashboard-content {
+  flex: 1; /* Take up available vertical space */
+  padding: 20px; /* Padding around the dashboard content */
+}
+
+h1 {
+  text-align: center; /* Center-align the heading */
+  margin-bottom: 20px; /* Add space below the heading */
+  font-size: 2em; /* Set a large font size for the heading */
+}
+
+.task-cards {
+  display: flex;
+  justify-content: space-between; /* Space the task cards evenly */
+  margin-bottom: 40px; /* Add space below the task cards section */
+  padding: 0 20px; /* Add padding on the left and right */
+}
+
+.task-card {
+  background-color: #f7a823; /* Set the background color of each task card */
+  border-radius: 10px; /* Round the corners of each card */
+  padding: 20px; /* Add padding inside each card */
+  text-align: center; /* Center-align the text inside the card */
+  width: 200px; /* Set the width of each task card */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow for a raised effect */
+}
+
+.task-card h2 {
+  margin-bottom: 10px; /* Add space below the heading */
+  font-size: 1.2em; /* Set the font size of the task card heading */
+}
+
+.task-card p {
+  font-size: 2.5em; /* Set a large font size for the task count */
+  margin: 0; /* Remove default margin */
+}
+
+.task-card span {
+  font-size: 0.8em; /* Set a smaller font size for the label text */
+}
+
+.charts {
+  display: flex;
+  justify-content: space-between; /* Space the charts evenly */
+  padding: 0 20px; /* Add padding on the left and right */
+  flex-wrap: wrap; /* Wrap the charts to the next line if they don't fit in one row */
+}
+
+.chart {
+  background-color: #f7a823; /* Set the background color for each chart */
+  border-radius: 10px; /* Round the corners of each chart container */
+  padding: 20px; /* Add padding inside the chart container */
+  width: 350px; /* Set the width for each chart */
+  text-align: center; /* Center-align the text inside the chart container */
+  margin-bottom: 20px; /* Add space below each chart */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow for a raised effect */
+}
+
+.footer {
+  text-align: center; /* Center-align the footer text */
+  padding: 10px; /* Add padding inside the footer */
+}

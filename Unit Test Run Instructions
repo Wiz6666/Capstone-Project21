@@ -1,0 +1,48 @@
+The unit test code files are located in the directory:  
+`\Capstone-Project21-main\client\src\__tests__`
+
+Steps to Run Unit Tests:
+
+1. Install Jest-related dependencies using npm:
+
+   npm install --save-dev jest @testing-library/react @testing-library/jest-dom
+   npm install --save-dev jest-environment-jsdom
+   npm install --save-dev @babel/preset-react @babel/preset-env
+   npm install --save-dev identity-obj-proxy
+   npm install --save-dev @babel/core @babel/preset-env @babel/preset-react babel-jest identity-obj-proxy
+   npm install --save-dev @testing-library/jest-dom
+
+
+2. Add the following configuration to the `package.json` file:
+
+   "scripts": {
+     "test": "jest --config jest.config.js"
+   }
+
+
+3. Create the `jest.config.js` file in the root directory of the project (\Capstone-Project21-main\), with the following content:
+
+   module.exports = {
+       transform: {
+           "^.+\\.jsx?$": "babel-jest"
+       },
+       testEnvironment: 'jest-environment-jsdom',
+       moduleNameMapper: {
+           "\\.(css|less)$": "identity-obj-proxy"
+       }
+   };
+
+
+4. Create the `babel.config.js` file in the root directory of the project, with the following content:
+
+   module.exports = {
+       presets: [
+           "@babel/preset-env",
+           "@babel/preset-react"
+       ]
+   };
+
+
+5. Run the tests using the following command:
+
+   npm test

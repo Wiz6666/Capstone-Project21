@@ -1,0 +1,155 @@
+
+.container {
+  height: 300vh; /* The container height is set to 300% of the viewport height, each "page" will take up one full viewport height */
+}
+
+.page {
+  position: relative;
+  height: 100vh; /* Each page section will occupy the full height of the viewport */
+  width: 100%; /* Full width of the viewport */
+  display: flex;
+  justify-content: center; /* Centers content horizontally */
+  align-items: center; /* Centers content vertically */
+}
+
+.fullHeightSection {
+  width: 100%; /* Takes full width of the container */
+  height: 100%; /* Takes full height of the container */
+  position: relative; /* Allows positioning of child elements relative to this container */
+}
+
+.video-background {
+  position: absolute; /* Ensures the video is placed behind the content */
+  top: 0;
+  left: 0;
+  width: 100%; /* Video covers the entire width of the viewport */
+  height: 100%; /* Video covers the entire height of the viewport */
+  object-fit: cover; /* Ensures the video fills the container without distortion */
+  z-index: -1; /* Places the video behind other elements */
+}
+
+.textContainer {
+  position: absolute; /* Allows precise positioning within the container */
+  top: 50%; /* Centers the content vertically */
+  left: 50%; /* Centers the content horizontally */
+  transform: translate(-50%, -50%); /* Corrects the positioning by moving it exactly to the center */
+  text-align: center; /* Centers the text inside this container */
+  color: #048492; /* Text color is dark green */
+}
+
+.title {
+  font-size: 48px; /* Large font size for the title */
+  font-weight: bold; /* Bold font for emphasis */
+  margin-bottom: 120px; /* Adds space below the title */
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: center; /* Centers the buttons horizontally */
+  gap: 20px; /* Adds space between each button */
+  padding-top: 20px; /* Adds space above the buttons */
+}
+
+.button {
+  padding: 10px 20px; /* Padding inside the button */
+  font-size: 18px; /* Button text size */
+  font-weight: bold; /* Bold font for the button text */
+  color: #FFFFFF; /* Button text color is white */
+  background-color: #048492; /* Dark green background for the button */
+  border: none; /* Removes default border */
+  border-radius: 5px; /* Slightly rounded corners */
+  cursor: pointer; /* Changes cursor to a pointer on hover */
+}
+
+/* Layout and styling for the content container on the second page */
+.contentContainer {
+  position: absolute; /* Positions content relative to the page */
+  display: flex;
+  justify-content: space-between; /* Spaces out content evenly */
+  align-items: center; /* Vertically centers content */
+  width: 100%; /* Full width of the container */
+  padding: 20px 40px; /* Adds padding around the content */
+  box-sizing: border-box; /* Includes padding in the element's total width and height */
+}
+
+/* Info section layout for the second page */
+.infoSection {
+  flex: 1; /* Takes up equal space with the videoContainer */
+  padding-right: 20px; /* Adds space between the text and the video */
+  color: #048492; /* Dark green text color */
+  text-align: left; /* Left-aligns the text */
+  margin-top: 150px; /* Adds space at the top of the info section */
+}
+
+.description {
+  font-size: 18px; /* Sets the font size for the description text */
+  font-weight: bold; /* Makes the description text bold */
+  line-height: 1.6; /* Sets line height for better readability */
+  text-align: center; /* Centers the description text */
+}
+
+/* Video container layout for the second page */
+.videoContainer {
+  flex: 1; /* Takes up equal space with the infoSection */
+  display: flex;
+  justify-content: center; /* Centers the video horizontally */
+  margin-top: 225px; /* Adds space at the top of the video container */
+}
+
+.videoSmall {
+  max-width: 100%; /* Ensures the video is responsive and does not exceed the container width */
+  width: 600px; /* Sets a specific width for the video */
+  border-radius: 10px; /* Adds rounded corners to the video */
+}
+
+/* Contact section styling for the third page */
+.content {
+  color: #048492; /* Dark green text color */
+  font-weight: bold; /* Bold text */
+  text-align: left; /* Left-aligns the content */
+  max-width: 600px; /* Sets a maximum width for the content */
+}
+
+.info {
+  font-size: 18px; /* Sets the font size for the contact information */
+  line-height: 1.5; /* Sets the line height for better readability */
+}
+
+.label {
+  font-size: 24px; /* Larger font size for labels such as "PHONE" and "EMAIL" */
+  font-weight: bold; /* Bold font for the labels */
+  margin-top: 20px; /* Adds space above the label */
+}
+
+.value {
+  margin-bottom: 20px; /* Adds space below the value */
+}
+
+/* Styling for social media icons in the contact section */
+.socialIcons {
+  display: flex;
+  justify-content: left; /* Aligns the social icons to the left */
+  margin-top: 10px; /* Adds space above the icons */
+}
+
+.icon {
+  margin-right: 20px; /* Adds space between each social icon */
+  display: inline-block; /* Allows the icon to behave like an inline-block element */
+}
+
+/* Styling for the social media icon images */
+.social-icon-img {
+  width: 40px; /* Sets the width of the social icon */
+  height: auto; /* Keeps the aspect ratio of the icon */
+  fill: white; /* Sets the fill color to white (useful for SVG icons) */
+  background-color: #048492; /* Sets a green background */
+  padding: 10px; /* Adds padding inside the icon */
+  border-radius: 50%; /* Makes the background a circle */
+  transition: transform 0.3s ease, background-color 0.3s ease; /* Adds a hover effect */
+}
+
+/* Hover effect for social media icons */
+.social-icon-img:hover {
+  transform: scale(1.1); /* Enlarges the icon on hover */
+  background-color: #048492; /* Darkens the green background on hover */
+}
